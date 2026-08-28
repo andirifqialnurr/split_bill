@@ -18,11 +18,14 @@ class SplitScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: ListView.separated(
+      child: ListView(
         padding: padding,
-        itemBuilder: (context, index) => children[index],
-        separatorBuilder: (context, index) => const SizedBox(height: SplitSpacing.lg),
-        itemCount: children.length,
+        children: [
+          for (final child in children) ...[
+            child,
+            const SizedBox(height: SplitSpacing.lg),
+          ],
+        ],
       ),
     );
   }

@@ -26,11 +26,11 @@ Aturan kerja:
 
 ## 3. Home, Settings, Dan Navigation
 
-- [ ] Migrasikan Home agar first screen terasa seperti app aktual: header, quick actions, empty state, recent bills, dan history card sesuai referensi.
-- [ ] Migrasikan Settings theme mode System/Light/Dark dengan segmented control yang konsisten.
-- [ ] Pastikan floating bottom nav tetap ergonomic dan tidak menutup konten.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint home/settings/navigation.
+- [x] Migrasikan Home agar first screen terasa seperti app aktual: header, quick actions, empty state, recent bills, dan history card sesuai referensi.
+- [x] Migrasikan Settings theme mode System/Light/Dark dengan segmented control yang konsisten.
+- [x] Pastikan floating bottom nav tetap ergonomic dan tidak menutup konten.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint home/settings/navigation.
 
 ## 4. New Bill Wizard
 

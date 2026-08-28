@@ -12,22 +12,48 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = controller.state;
+    final colors = context.splitColors;
     return SplitScreen(
       children: [
-        Text(
-          'Settings',
-          style: Theme.of(context).textTheme.headlineSmall,
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Settings', style: Theme.of(context).textTheme.headlineMedium),
+                  const SizedBox(height: SplitSpacing.xs),
+                  Text(
+                    'Preferensi lokal untuk tampilan Split Bill.',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: colors.secondarySoft,
+                borderRadius: BorderRadius.circular(SplitRadius.lg),
+              ),
+              child: Icon(Icons.tune_rounded, color: colors.secondary),
+            ),
+          ],
         ),
         SplitCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Text('Theme', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: SplitSpacing.xs),
               Text(
-                'Theme',
-                style: Theme.of(context).textTheme.titleMedium,
+                'Pilih mode yang nyaman untuk dipakai saat membagi tagihan.',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-              const SizedBox(height: SplitSpacing.md),
+              const SizedBox(height: SplitSpacing.lg),
               SegmentedButton<ThemeMode>(
+                showSelectedIcon: false,
                 segments: const [
                   ButtonSegment(
                     value: ThemeMode.system,
@@ -49,6 +75,21 @@ class SettingsPage extends StatelessWidget {
                 onSelectionChanged: (value) {
                   controller.setThemeMode(value.first);
                 },
+              ),
+            ],
+          ),
+        ),
+        SplitCard(
+          backgroundColor: colors.surfaceAlt,
+          child: Row(
+            children: [
+              Icon(Icons.storage_rounded, color: colors.textMuted),
+              const SizedBox(width: SplitSpacing.md),
+              Expanded(
+                child: Text(
+                  'Semua bill tersimpan di SQLite lokal perangkat.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
             ],
           ),
