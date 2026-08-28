@@ -35,13 +35,13 @@ Kerjakan berurutan. Setelah setiap task utama selesai, jalankan validasi relevan
 
 ## 4. Local Database
 
-- [ ] Implementasi `SplitBillDatabase` sqflite.
-- [ ] Implementasi schema v1 dan index.
-- [ ] Implementasi repository save/list/detail bill.
-- [ ] Simpan settlement snapshot dalam transaction.
-- [ ] Tambahkan test repository dengan database temp bila environment mendukung.
-- [ ] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint database.
+- [x] Implementasi `SplitBillDatabase` sqflite.
+- [x] Implementasi schema v1 dan index.
+- [x] Implementasi repository save/list/detail bill.
+- [x] Simpan settlement snapshot dalam transaction.
+- [x] Tambahkan test repository dengan database temp bila environment mendukung.
+- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint database.
 
 ## 5. App State And Navigation
 
