@@ -13,13 +13,13 @@ Kerjakan berurutan. Setelah setiap task utama selesai, jalankan validasi relevan
 
 ## 2. Flutter Project Setup
 
-- [ ] Tambahkan dependency `sqflite`, `path`, dan `intl`.
-- [ ] Ganti counter template dengan bootstrap app Split Bill.
-- [ ] Buat struktur folder `core`, `data`, `domain`, `features`, `ui`.
-- [ ] Buat theme light/dark sesuai `DESIGN-SYSTEM.md`.
-- [ ] Tambahkan widget test smoke untuk Home.
-- [ ] Jalankan `flutter pub get`, `flutter analyze`, `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint setup.
+- [x] Tambahkan dependency `sqflite`, `path`, dan `intl`.
+- [x] Ganti counter template dengan bootstrap app Split Bill.
+- [x] Buat struktur folder `core`, `data`, `domain`, `features`, `ui`.
+- [x] Buat theme light/dark sesuai `DESIGN-SYSTEM.md`.
+- [x] Tambahkan widget test smoke untuk Home.
+- [x] Jalankan `flutter pub get`, `flutter analyze`, `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint setup.
 
 ## 3. Domain Calculation
 
