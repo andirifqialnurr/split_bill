@@ -45,37 +45,37 @@ Kerjakan berurutan. Setelah setiap task utama selesai, jalankan validasi relevan
 
 ## 5. App State And Navigation
 
-- [ ] Buat controller/state app tanpa cloud dependency.
-- [ ] Implementasi Home/history state.
-- [ ] Implementasi New Bill step navigation.
-- [ ] Pastikan data tidak hilang saat pindah step.
-- [ ] Implementasi Settings theme mode.
-- [ ] Jika bottom nav dipakai, gunakan floating bottom nav.
-- [ ] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint state/navigation.
+- [x] Buat controller/state app tanpa cloud dependency.
+- [x] Implementasi Home/history state.
+- [x] Implementasi New Bill step navigation.
+- [x] Pastikan data tidak hilang saat pindah step.
+- [x] Implementasi Settings theme mode.
+- [x] Jika bottom nav dipakai, gunakan floating bottom nav.
+- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint state/navigation.
 
 ## 6. Bill Entry UI
 
-- [ ] Implementasi mode selection.
-- [ ] Implementasi Detail bill form.
-- [ ] Implementasi People step.
-- [ ] Implementasi Items step.
-- [ ] Implementasi Assign Item UI.
-- [ ] Implementasi Charges step.
-- [ ] Validasi empty, unassigned, incomplete custom, dan negative total.
-- [ ] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint entry UI.
+- [x] Implementasi mode selection.
+- [x] Implementasi Detail bill form.
+- [x] Implementasi People step.
+- [x] Implementasi Items step.
+- [x] Implementasi Assign Item UI.
+- [x] Implementasi Charges step.
+- [x] Validasi empty, unassigned, incomplete custom, dan negative total.
+- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint entry UI.
 
 ## 7. Result And History
 
-- [ ] Implementasi Review/Result screen.
-- [ ] Implementasi breakdown per peserta.
-- [ ] Implementasi expandable item detail.
-- [ ] Implementasi Copy Summary.
-- [ ] Implementasi Save bill ke history.
-- [ ] Implementasi History Detail read-only.
-- [ ] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint result/history.
+- [x] Implementasi Review/Result screen.
+- [x] Implementasi breakdown per peserta.
+- [x] Implementasi expandable item detail.
+- [x] Implementasi Copy Summary.
+- [x] Implementasi Save bill ke history.
+- [x] Implementasi History Detail read-only.
+- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint result/history.
 
 ## 8. UI Polish And Acceptance
 

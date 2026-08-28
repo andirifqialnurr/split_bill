@@ -8,7 +8,9 @@ import 'split_bill_controller.dart';
 import 'split_bill_state.dart';
 
 class SplitBillApp extends StatefulWidget {
-  const SplitBillApp({super.key});
+  const SplitBillApp({super.key, this.loadPersistenceOnStart = true});
+
+  final bool loadPersistenceOnStart;
 
   @override
   State<SplitBillApp> createState() => _SplitBillAppState();
@@ -21,6 +23,9 @@ class _SplitBillAppState extends State<SplitBillApp> {
   void initState() {
     super.initState();
     controller = SplitBillController();
+    if (widget.loadPersistenceOnStart) {
+      controller.loadHistory();
+    }
   }
 
   @override
