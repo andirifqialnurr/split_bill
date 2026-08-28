@@ -217,6 +217,7 @@ WHERE bi.bill_id = ?
         participantIds: assignmentsByItem[itemId] ?? const [],
       );
     }).toList(growable: false);
+    final itemShares = _itemSharesByParticipant(items, participantById.keys.toSet());
 
     final customShares = <String, int>{};
     for (final row in customRows) {
@@ -234,6 +235,7 @@ WHERE bi.bill_id = ?
         discountAmount: row['discount_amount'] as int,
         roundingAmount: row['rounding_amount'] as int,
         amountDue: row['amount_due'] as int,
+        items: itemShares[participantId] ?? const [],
       );
     }).whereType<SettlementResult>().toList(growable: false);
 
@@ -269,5 +271,34 @@ WHERE bi.bill_id = ?
     );
 
     return SavedBillDetail(id: id, bill: bill, calculation: calculation);
+  }
+
+  Map<String, List<PersonItemShare>> _itemSharesByParticipant(
+    List<BillItem> items,
+    Set<String> participantIds,
+  ) {
+    final shares = <String, List<PersonItemShare>>{
+      for (final id in participantIds) id: [],
+    };
+    for (final item in items) {
+      final assigned = item.participantIds
+          .where(participantIds.contains)
+          .toList(growable: false);
+      if (assigned.isEmpty) continue;
+      final portions = _divideEvenly(item.totalAmount, assigned.length);
+      for (var index = 0; index < assigned.length; index++) {
+        shares[assigned[index]]?.add(
+          PersonItemShare(itemName: item.name, amount: portions[index]),
+        );
+      }
+    }
+    return shares;
+  }
+
+  List<int> _divideEvenly(int total, int count) {
+    if (count <= 0) return const [];
+    final base = total ~/ count;
+    final remainder = total % count;
+    return List<int>.generate(count, (index) => base + (index < remainder ? 1 : 0));
   }
 }

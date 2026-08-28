@@ -44,8 +44,8 @@ Aturan kerja:
 
 ## 5. Result, History, Dan Acceptance
 
-- [ ] Migrasikan `ResultView` agar Result dan History Detail memakai komponen breakdown yang sama.
-- [ ] Pastikan Copy Summary dan Save bill tetap bekerja.
-- [ ] Pastikan long item name, 8+ participants, light/dark, dan width kecil punya guard layout.
-- [ ] Jalankan `flutter analyze`, `flutter test --concurrency=1`, dan `flutter build apk --debug` bila Android SDK tersedia.
-- [ ] Commit dan push final state.
+- [x] Migrasikan `ResultView` agar Result dan History Detail memakai komponen breakdown yang sama.
+- [x] Pastikan Copy Summary dan Save bill tetap bekerja.
+- [x] Pastikan long item name, 8+ participants, light/dark, dan width kecil punya guard layout.
+- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`, dan `flutter build apk --debug` bila Android SDK tersedia.
+- [x] Commit dan push final state.

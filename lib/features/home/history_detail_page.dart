@@ -29,8 +29,11 @@ class HistoryDetailPage extends StatelessWidget {
             return SplitScreen(
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
               children: [
-                _Header(title: 'Bill not found'),
-                const SplitCard(child: Text('This saved bill is no longer available.')),
+                const _Header(title: 'Bill not found'),
+                const SplitWarningBanner(
+                  message: 'This saved bill is no longer available.',
+                  isError: true,
+                ),
               ],
             );
           }
@@ -38,7 +41,12 @@ class HistoryDetailPage extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
             children: [
               _Header(title: detail.bill.title.trim().isEmpty ? 'Saved Bill' : detail.bill.title),
-              ResultView(calculation: detail.calculation),
+              ResultView(
+                calculation: detail.calculation,
+                title: detail.bill.title,
+                occurredAt: detail.bill.occurredAt,
+                mode: detail.bill.mode,
+              ),
             ],
           );
         },
@@ -56,9 +64,10 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton.filledTonal(
+        SplitIconButton(
+          tooltip: 'Back',
+          icon: Icons.arrow_back_rounded,
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back_rounded),
         ),
         const SizedBox(width: SplitSpacing.md),
         Expanded(

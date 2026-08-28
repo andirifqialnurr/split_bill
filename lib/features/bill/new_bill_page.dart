@@ -968,10 +968,18 @@ class _ResultStep extends StatelessWidget {
   Widget build(BuildContext context) {
     try {
       final calculation = controller.calculateOrThrow();
+      final draft = controller.state.draft;
       return ResultView(
         calculation: calculation,
+        title: draft?.title,
+        occurredAt: draft?.occurredAt,
+        mode: draft?.mode,
         onCopy: () async {
-          await copyBillSummary(calculation);
+          await copyBillSummary(
+            calculation,
+            title: draft?.title,
+            occurredAt: draft?.occurredAt,
+          );
           if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Summary copied.')),
