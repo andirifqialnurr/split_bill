@@ -79,18 +79,18 @@ Kerjakan berurutan. Setelah setiap task utama selesai, jalankan validasi relevan
 
 ## 8. UI Polish And Acceptance
 
-- [ ] Audit spacing konsisten.
-- [ ] Audit data yang ditampilkan tidak duplikatif.
-- [ ] Audit layout long item name dan 8+ participants.
-- [ ] Audit small width behavior 320-359dp.
-- [ ] Audit light/dark Result.
-- [ ] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint polish.
+- [x] Audit spacing konsisten.
+- [x] Audit data yang ditampilkan tidak duplikatif.
+- [x] Audit layout long item name dan 8+ participants.
+- [x] Audit small width behavior 320-359dp.
+- [x] Audit light/dark Result.
+- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint polish.
 
 ## 9. Final Validation
 
-- [ ] `flutter analyze` clean.
-- [ ] `flutter test --concurrency=1` pass.
-- [ ] `flutter build apk --debug` pass jika SDK Android tersedia.
-- [ ] Semua checklist wajib selesai.
-- [ ] Commit dan push final state.
+- [x] `flutter analyze` clean.
+- [x] `flutter test --concurrency=1` pass.
+- [x] `flutter build apk --debug` pass jika SDK Android tersedia.
+- [x] Semua checklist wajib selesai.
+- [x] Commit dan push final state.
