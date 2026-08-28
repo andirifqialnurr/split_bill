@@ -23,15 +23,15 @@ Kerjakan berurutan. Setelah setiap task utama selesai, jalankan validasi relevan
 
 ## 3. Domain Calculation
 
-- [ ] Buat model draft bill, participant, item, charge, result.
-- [ ] Buat formatter rupiah dan parser nominal.
-- [ ] Implementasi equal split.
-- [ ] Implementasi by items split dengan assignment.
-- [ ] Implementasi custom amount split.
-- [ ] Implementasi tax/service/discount allocation dan deterministic remainder.
-- [ ] Tambahkan unit test calculation invariant.
-- [ ] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint calculation.
+- [x] Buat model draft bill, participant, item, charge, result.
+- [x] Buat formatter rupiah dan parser nominal.
+- [x] Implementasi equal split.
+- [x] Implementasi by items split dengan assignment.
+- [x] Implementasi custom amount split.
+- [x] Implementasi tax/service/discount allocation dan deterministic remainder.
+- [x] Tambahkan unit test calculation invariant.
+- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint calculation.
 
 ## 4. Local Database
 
