@@ -785,6 +785,7 @@ class _ChargesStep extends StatelessWidget {
           const SizedBox(height: SplitSpacing.lg),
           if (draft.mode == SplitMode.equal) ...[
             SplitTextField(
+              fieldKey: const ValueKey('bill-total-field'),
               controller: totalController,
               label: strings.billTotal,
               prefixText: 'Rp ',
@@ -871,6 +872,7 @@ class _CustomAmountEditor extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SplitTextField(
+          fieldKey: const ValueKey('custom-total-field'),
           controller: totalController,
           label: strings.totalToSplit,
           prefixText: 'Rp ',
@@ -1109,7 +1111,7 @@ bool _canAdvance(BillStep step, DraftBill draft) {
 }
 
 bool _chargesValid(DraftBill draft) {
-  if (draft.mode == SplitMode.equal && draft.equalTotalAmount <= 0) return false;
+  if (draft.mode == SplitMode.equal) return draft.equalTotalAmount > 0;
   if (draft.mode == SplitMode.custom) {
     final allocated = draft.customShares.values.fold<int>(0, (sum, amount) => sum + amount);
     return draft.equalTotalAmount > 0 && allocated == draft.equalTotalAmount;

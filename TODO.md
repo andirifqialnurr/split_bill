@@ -121,11 +121,11 @@ Commit plan:
 
 Checklist:
 
-- [ ] Uji manual flow Indonesia: Home -> New Bill -> Result.
-- [ ] Uji manual flow English: Home -> New Bill -> Result.
-- [ ] Pastikan Settings tetap bisa mengganti theme dan language.
-- [ ] Pastikan Copy Summary mengikuti bahasa aktif.
-- [ ] Jalankan `flutter analyze`.
-- [ ] Jalankan `flutter test --concurrency=1`.
-- [ ] Jalankan `flutter build apk --debug` bila Android SDK tersedia.
-- [ ] Commit dan push final language state.
+- [x] Uji acceptance otomatis flow Indonesia: Home -> New Bill -> Result.
+- [x] Uji acceptance otomatis flow English: Home -> New Bill -> Result.
+- [x] Pastikan Settings tetap bisa mengganti theme dan language.
+- [x] Pastikan Copy Summary mengikuti bahasa aktif.
+- [x] Jalankan `flutter analyze`.
+- [x] Jalankan `flutter test --concurrency=1`.
+- [x] Jalankan `flutter build apk --debug` bila Android SDK tersedia.
+- [x] Commit dan push final language state.

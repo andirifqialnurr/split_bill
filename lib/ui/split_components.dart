@@ -211,9 +211,11 @@ class SplitTextField extends StatelessWidget {
     this.textInputAction,
     this.onChanged,
     this.onSubmitted,
+    this.fieldKey,
   });
 
   final TextEditingController controller;
+  final Key? fieldKey;
   final String? label;
   final String? hint;
   final String? prefixText;
@@ -226,6 +228,7 @@ class SplitTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      key: fieldKey,
       controller: controller,
       keyboardType: keyboardType,
       textInputAction: textInputAction,
