@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/split_bill_controller.dart';
+import '../../app/split_bill_strings.dart';
 import '../../app/split_bill_state.dart';
 import '../../core/money.dart';
 import '../../domain/split_bill_models.dart';
@@ -43,9 +44,10 @@ class _NewBillPageState extends State<NewBillPage> {
       builder: (context, _) {
         final draft = widget.controller.state.draft;
         if (draft == null) {
-          return const Scaffold(body: Center(child: Text('No active bill.')));
+          return Scaffold(body: Center(child: Text(widget.controller.strings.helperNeedTotal)));
         }
 
+        final strings = widget.controller.strings;
         return Scaffold(
           body: SplitScreen(
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
@@ -55,6 +57,7 @@ class _NewBillPageState extends State<NewBillPage> {
                 step: widget.controller.state.currentStep,
                 steps: _stepsFor(draft.mode),
                 mode: draft.mode,
+                strings: strings,
               ),
               _buildStep(context, draft),
               _FooterActions(
@@ -107,7 +110,7 @@ class _NewBillPageState extends State<NewBillPage> {
     }
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bill saved to history.')),
+      SnackBar(content: Text(widget.controller.strings.billSaved)),
     );
   }
 }
@@ -119,17 +122,18 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = controller.strings;
     return Row(
       children: [
         SplitIconButton(
-          tooltip: 'Close',
+          tooltip: strings.close,
           icon: Icons.close_rounded,
           onPressed: () => _close(context),
         ),
         const SizedBox(width: SplitSpacing.md),
         Expanded(
           child: Text(
-            'New Bill',
+            strings.newBill,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
@@ -146,16 +150,16 @@ class _Header extends StatelessWidget {
     final shouldClose = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Discard this bill?'),
-        content: const Text('Unsaved bill data will be removed.'),
+        title: Text(controller.strings.discardTitle),
+        content: Text(controller.strings.discardMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(controller.strings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Discard'),
+            child: Text(controller.strings.discard),
           ),
         ],
       ),
@@ -171,11 +175,13 @@ class _StepIndicator extends StatelessWidget {
     required this.step,
     required this.steps,
     required this.mode,
+    required this.strings,
   });
 
   final BillStep step;
   final List<BillStep> steps;
   final SplitMode mode;
+  final SplitStrings strings;
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +193,7 @@ class _StepIndicator extends StatelessWidget {
         children: [
           Row(
             children: [
-              SplitModeBadge(mode: mode),
+              SplitModeBadge(mode: mode, label: strings.modeLabel(mode)),
               const Spacer(),
               Text(
                 '${activeIndex + 1}/${steps.length}',
@@ -213,7 +219,7 @@ class _StepIndicator extends StatelessWidget {
               children: [
                 for (var index = 0; index < steps.length; index++) ...[
                   _StepPill(
-                    label: _stepLabel(steps[index], mode),
+                    label: _stepLabel(steps[index], mode, strings),
                     active: index == activeIndex,
                     done: index < activeIndex,
                   ),
@@ -285,6 +291,7 @@ class _DetailStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = controller.strings;
     if (titleController.text != draft.title) {
       titleController.text = draft.title;
     }
@@ -296,12 +303,12 @@ class _DetailStep extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Bill detail', style: Theme.of(context).textTheme.titleLarge),
+              Text(strings.billDetail, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: SplitSpacing.lg),
               SplitTextField(
                 controller: titleController,
-                label: 'Title',
-                hint: 'Dinner at Braga',
+                label: strings.title,
+                hint: strings.titleHint,
                 textInputAction: TextInputAction.next,
                 onChanged: controller.setTitle,
               ),
@@ -309,12 +316,14 @@ class _DetailStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: SplitSpacing.lg),
-        const SplitSectionLabel('Split Mode'),
+        SplitSectionLabel(strings.splitMode),
         const SizedBox(height: SplitSpacing.md),
         for (final mode in SplitMode.values) ...[
           SplitModeCard(
             mode: mode,
             selected: draft.mode == mode,
+            label: strings.modeLabel(mode),
+            description: strings.modeDescription(mode),
             onTap: () => controller.setMode(mode),
           ),
           const SizedBox(height: SplitSpacing.sm),
@@ -337,20 +346,21 @@ class _PeopleStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = controller.strings;
     return SplitCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('People', style: Theme.of(context).textTheme.titleLarge),
+          Text(strings.people, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: SplitSpacing.xs),
-          Text('Tambahkan minimal dua peserta untuk membagi tagihan.', style: Theme.of(context).textTheme.bodyMedium),
+          Text(strings.peopleIntro, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: SplitSpacing.lg),
           Row(
             children: [
               Expanded(
                 child: SplitTextField(
                   controller: participantController,
-                  label: 'Nickname',
+                  label: strings.nickname,
                   hint: 'Ayu',
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addParticipant(),
@@ -358,7 +368,7 @@ class _PeopleStep extends StatelessWidget {
               ),
               const SizedBox(width: SplitSpacing.sm),
               SplitIconButton(
-                tooltip: 'Add person',
+                tooltip: strings.addPerson,
                 icon: Icons.add_rounded,
                 onPressed: _addParticipant,
               ),
@@ -366,10 +376,10 @@ class _PeopleStep extends StatelessWidget {
           ),
           const SizedBox(height: SplitSpacing.lg),
           if (draft.participants.isEmpty)
-            const SplitEmptyState(
+            SplitEmptyState(
               icon: Icons.person_add_alt_1_rounded,
-              title: 'Belum ada peserta',
-              message: 'Masukkan nama panggilan satu per satu.',
+              title: strings.noPeopleTitle,
+              message: strings.noPeopleMessage,
             )
           else
             Wrap(
@@ -402,21 +412,21 @@ class _PeopleStep extends StatelessWidget {
     final newName = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit participant'),
+        title: Text(controller.strings.editParticipant),
         content: TextField(
           controller: editController,
           autofocus: true,
-          decoration: const InputDecoration(labelText: 'Nickname'),
+          decoration: InputDecoration(labelText: controller.strings.nickname),
           onSubmitted: (value) => Navigator.of(context).pop(value),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(controller.strings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(editController.text),
-            child: const Text('Save'),
+            child: Text(controller.strings.save),
           ),
         ],
       ),
@@ -437,16 +447,16 @@ class _PeopleStep extends StatelessWidget {
     final shouldRemove = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Remove ${participant.name}?'),
-        content: const Text('Item assignments and custom amount for this person will be cleared.'),
+        title: Text(controller.strings.removeParticipantTitle(participant.name)),
+        content: Text(controller.strings.removeParticipantMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(controller.strings.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Remove'),
+            child: Text(controller.strings.remove),
           ),
         ],
       ),
@@ -474,18 +484,19 @@ class _ItemsStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = controller.strings;
     return SplitCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Items', style: Theme.of(context).textTheme.titleLarge),
+          Text(strings.items, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: SplitSpacing.xs),
-          Text('Tambahkan item, lalu pilih siapa yang ikut membayar.', style: Theme.of(context).textTheme.bodyMedium),
+          Text(strings.itemsIntro, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: SplitSpacing.lg),
           SplitTextField(
             controller: nameController,
-            label: 'Item name',
-            hint: 'Ayam bakar madu',
+            label: strings.itemName,
+            hint: strings.itemHint,
           ),
           const SizedBox(height: SplitSpacing.sm),
           Row(
@@ -494,7 +505,7 @@ class _ItemsStep extends StatelessWidget {
                 width: 92,
                 child: SplitTextField(
                   controller: quantityController,
-                  label: 'Qty',
+                  label: strings.quantity,
                   keyboardType: TextInputType.number,
                 ),
               ),
@@ -502,7 +513,7 @@ class _ItemsStep extends StatelessWidget {
               Expanded(
                 child: SplitTextField(
                   controller: totalController,
-                  label: 'Total price',
+                  label: strings.totalPrice,
                   prefixText: 'Rp ',
                   keyboardType: TextInputType.number,
                 ),
@@ -511,7 +522,7 @@ class _ItemsStep extends StatelessWidget {
           ),
           const SizedBox(height: SplitSpacing.md),
           SplitGhostAddButton(
-            label: 'Tambah Item',
+            label: strings.addItem,
             onPressed: () {
               controller.addItem(
                 name: nameController.text,
@@ -525,10 +536,10 @@ class _ItemsStep extends StatelessWidget {
           ),
           const SizedBox(height: SplitSpacing.lg),
           if (draft.items.isEmpty)
-            const SplitEmptyState(
+            SplitEmptyState(
               icon: Icons.playlist_add_rounded,
-              title: 'Belum ada item',
-              message: 'Tambahkan item satu per satu, lalu tentukan peserta.',
+              title: strings.noItemsTitle,
+              message: strings.noItemsMessage,
             )
           else
             Column(
@@ -537,6 +548,8 @@ class _ItemsStep extends StatelessWidget {
                   _ItemTile(
                     item: item,
                     participants: draft.participants,
+                    unassignedLabel: strings.unassigned,
+                    deleteTooltip: strings.deleteItem,
                     onAssign: () => _showAssignSheet(context, item),
                     onDelete: () => controller.removeItem(item.localId),
                   ),
@@ -596,7 +609,7 @@ class _ItemsStep extends StatelessWidget {
                       children: [
                         Expanded(
                           child: SplitSecondaryButton(
-                            label: 'Select All',
+                            label: controller.strings.selectAll,
                             icon: Icons.done_all_rounded,
                             onPressed: () {
                               setSheetState(() {
@@ -610,7 +623,7 @@ class _ItemsStep extends StatelessWidget {
                         const SizedBox(width: SplitSpacing.sm),
                         Expanded(
                           child: SplitPrimaryButton(
-                            label: 'Done',
+                            label: controller.strings.done,
                             icon: Icons.check_rounded,
                             onPressed: () {
                               controller.setItemParticipants(item.localId, selected.toList());
@@ -635,12 +648,16 @@ class _ItemTile extends StatelessWidget {
   const _ItemTile({
     required this.item,
     required this.participants,
+    required this.unassignedLabel,
+    required this.deleteTooltip,
     required this.onAssign,
     required this.onDelete,
   });
 
   final BillItem item;
   final List<BillParticipant> participants;
+  final String unassignedLabel;
+  final String deleteTooltip;
   final VoidCallback onAssign;
   final VoidCallback onDelete;
 
@@ -674,7 +691,7 @@ class _ItemTile extends StatelessWidget {
                   ),
                   const SizedBox(width: SplitSpacing.sm),
                   SplitIconButton(
-                    tooltip: 'Delete item',
+                    tooltip: deleteTooltip,
                     icon: Icons.delete_outline_rounded,
                     onPressed: onDelete,
                   ),
@@ -689,7 +706,7 @@ class _ItemTile extends StatelessWidget {
               Row(
                 children: [
                   if (assigned.isEmpty)
-                    _UnassignedBadge()
+                    _UnassignedBadge(label: unassignedLabel)
                   else
                     Flexible(child: SplitAvatarStack(participants: assigned)),
                   const Spacer(),
@@ -705,6 +722,10 @@ class _ItemTile extends StatelessWidget {
 }
 
 class _UnassignedBadge extends StatelessWidget {
+  const _UnassignedBadge({required this.label});
+
+  final String label;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.splitColors;
@@ -718,7 +739,7 @@ class _UnassignedBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(SplitRadius.pill),
       ),
       child: Text(
-        'Unassigned',
+        label,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.warning),
       ),
     );
@@ -738,6 +759,7 @@ class _ChargesStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = controller.strings;
     final totalText = draft.equalTotalAmount == 0 ? '' : draft.equalTotalAmount.toString();
     if (totalController.text != totalText && totalController.text.isEmpty) {
       totalController.text = totalText;
@@ -751,21 +773,19 @@ class _ChargesStep extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            draft.mode == SplitMode.custom ? 'Custom Amount' : 'Charges',
+            draft.mode == SplitMode.custom ? strings.customAmount : strings.charges,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: SplitSpacing.xs),
           Text(
-            draft.mode == SplitMode.custom
-                ? 'Isi total dasar dan alokasi tiap peserta sebelum biaya tambahan.'
-                : 'Atur pajak, layanan, dan diskon bila ada.',
+            draft.mode == SplitMode.custom ? strings.customIntro : strings.chargesIntro,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: SplitSpacing.lg),
           if (draft.mode == SplitMode.equal) ...[
             SplitTextField(
               controller: totalController,
-              label: 'Bill total',
+              label: strings.billTotal,
               prefixText: 'Rp ',
               keyboardType: TextInputType.number,
               onChanged: controller.setBillTotal,
@@ -781,16 +801,16 @@ class _ChargesStep extends StatelessWidget {
             const SizedBox(height: SplitSpacing.lg),
           ],
           SplitSummaryRow(
-            label: draft.mode == SplitMode.items ? 'Subtotal (from items)' : 'Subtotal',
+            label: draft.mode == SplitMode.items ? strings.subtotalFromItems : strings.subtotal,
             value: formatRupiah(subtotal),
             bold: true,
           ),
           const SizedBox(height: SplitSpacing.lg),
-          _ChargeEditor(label: 'Tax', charge: draft.tax, onChanged: controller.setTax),
+          _ChargeEditor(label: strings.tax, strings: strings, charge: draft.tax, onChanged: controller.setTax),
           const SizedBox(height: SplitSpacing.md),
-          _ChargeEditor(label: 'Service', charge: draft.service, onChanged: controller.setService),
+          _ChargeEditor(label: strings.service, strings: strings, charge: draft.service, onChanged: controller.setService),
           const SizedBox(height: SplitSpacing.md),
-          _ChargeEditor(label: 'Discount', charge: draft.discount, onChanged: controller.setDiscount),
+          _ChargeEditor(label: strings.discount, strings: strings, charge: draft.discount, onChanged: controller.setDiscount),
           const SizedBox(height: SplitSpacing.lg),
           Container(
             padding: const EdgeInsets.all(SplitSpacing.lg),
@@ -800,19 +820,19 @@ class _ChargesStep extends StatelessWidget {
             ),
             child: Column(
               children: [
-                SplitSummaryRow(label: 'Subtotal', value: formatRupiah(subtotal)),
+                SplitSummaryRow(label: strings.subtotal, value: formatRupiah(subtotal)),
                 if (draft.tax.type != ChargeType.none)
-                  SplitSummaryRow(label: 'Tax', value: '+ ${formatRupiah(draft.tax.resolve(subtotal))}'),
+                  SplitSummaryRow(label: strings.tax, value: '+ ${formatRupiah(draft.tax.resolve(subtotal))}'),
                 if (draft.service.type != ChargeType.none)
-                  SplitSummaryRow(label: 'Service', value: '+ ${formatRupiah(draft.service.resolve(subtotal))}'),
+                  SplitSummaryRow(label: strings.service, value: '+ ${formatRupiah(draft.service.resolve(subtotal))}'),
                 if (draft.discount.type != ChargeType.none)
                   SplitSummaryRow(
-                    label: 'Discount',
+                    label: strings.discount,
                     value: '- ${formatRupiah(draft.discount.resolve(subtotal))}',
                     valueColor: context.splitColors.success,
                   ),
                 Divider(color: context.splitColors.border),
-                SplitSummaryRow(label: 'Grand Total', value: formatRupiah(grandTotal.clamp(0, 1 << 62)), bold: true),
+                SplitSummaryRow(label: strings.grandTotal, value: formatRupiah(grandTotal.clamp(0, 1 << 62)), bold: true),
               ],
             ),
           ),
@@ -842,6 +862,7 @@ class _CustomAmountEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = controller.strings;
     final allocated = draft.customShares.values.fold<int>(0, (sum, amount) => sum + amount);
     final remaining = draft.equalTotalAmount - allocated;
     final ok = remaining == 0 && draft.equalTotalAmount > 0;
@@ -850,14 +871,14 @@ class _CustomAmountEditor extends StatelessWidget {
       children: [
         SplitTextField(
           controller: totalController,
-          label: 'Total to split',
+          label: strings.totalToSplit,
           prefixText: 'Rp ',
           keyboardType: TextInputType.number,
           onChanged: controller.setBillTotal,
         ),
         const SizedBox(height: SplitSpacing.md),
         SplitWarningBanner(
-          message: ok ? 'Semua alokasi sudah pas.' : 'Remaining ${formatRupiah(remaining)}.',
+          message: ok ? strings.allocationOk : strings.remainingAmount(formatRupiah(remaining)),
           isError: !ok,
         ),
         const SizedBox(height: SplitSpacing.lg),
@@ -899,11 +920,13 @@ class _CustomAmountEditor extends StatelessWidget {
 class _ChargeEditor extends StatelessWidget {
   const _ChargeEditor({
     required this.label,
+    required this.strings,
     required this.charge,
     required this.onChanged,
   });
 
   final String label;
+  final SplitStrings strings;
   final BillCharge charge;
   final ValueChanged<BillCharge> onChanged;
 
@@ -919,10 +942,10 @@ class _ChargeEditor extends StatelessWidget {
           const SizedBox(height: SplitSpacing.sm),
           SegmentedButton<ChargeType>(
             showSelectedIcon: false,
-            segments: const [
-              ButtonSegment(value: ChargeType.none, label: Text('None')),
-              ButtonSegment(value: ChargeType.fixed, label: Text('Rp')),
-              ButtonSegment(value: ChargeType.percentage, label: Text('%')),
+            segments: [
+              ButtonSegment(value: ChargeType.none, label: Text(strings.none)),
+              const ButtonSegment(value: ChargeType.fixed, label: Text('Rp')),
+              const ButtonSegment(value: ChargeType.percentage, label: Text('%')),
             ],
             selected: {charge.type},
             onSelectionChanged: (value) {
@@ -940,7 +963,7 @@ class _ChargeEditor extends StatelessWidget {
                       : charge.value.toString(),
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: charge.type == ChargeType.percentage ? '$label percent' : '$label amount',
+                labelText: charge.type == ChargeType.percentage ? '$label ${strings.percent}' : '$label ${strings.amount}',
                 prefixText: charge.type == ChargeType.fixed ? 'Rp ' : null,
                 suffixText: charge.type == ChargeType.percentage ? '%' : null,
               ),
@@ -969,6 +992,7 @@ class _ResultStep extends StatelessWidget {
     try {
       final calculation = controller.calculateOrThrow();
       final draft = controller.state.draft;
+      final strings = controller.strings;
       return ResultView(
         calculation: calculation,
         title: draft?.title,
@@ -982,7 +1006,7 @@ class _ResultStep extends StatelessWidget {
           );
           if (!context.mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Summary copied.')),
+            SnackBar(content: Text(strings.summaryCopied)),
           );
         },
         onSave: onSave,
@@ -1007,13 +1031,14 @@ class _FooterActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final step = controller.state.currentStep;
+    final strings = controller.strings;
     final canAdvance = _canAdvance(step, draft);
     final isFirst = step == _stepsFor(draft.mode).first;
     final isResult = step == BillStep.result;
     return Column(
       children: [
         if (!canAdvance && !isResult) ...[
-          SplitWarningBanner(message: _advanceHelper(step, draft), isError: true),
+          SplitWarningBanner(message: _advanceHelper(step, draft, strings), isError: true),
           const SizedBox(height: SplitSpacing.sm),
         ],
         Row(
@@ -1021,7 +1046,7 @@ class _FooterActions extends StatelessWidget {
             if (!isFirst)
               Expanded(
                 child: SplitSecondaryButton(
-                  label: 'Back',
+                  label: strings.back,
                   icon: Icons.arrow_back_rounded,
                   onPressed: controller.previousStep,
                 ),
@@ -1029,7 +1054,7 @@ class _FooterActions extends StatelessWidget {
             if (!isFirst) const SizedBox(width: SplitSpacing.sm),
             Expanded(
               child: SplitPrimaryButton(
-                label: isResult ? 'Save Bill' : 'Next',
+                label: isResult ? strings.saveBill : strings.next,
                 icon: isResult ? Icons.save_rounded : Icons.arrow_forward_rounded,
                 onPressed: isResult ? onSave : (canAdvance ? controller.nextStep : null),
               ),
@@ -1059,13 +1084,13 @@ List<BillStep> _stepsFor(SplitMode mode) {
   };
 }
 
-String _stepLabel(BillStep step, SplitMode mode) {
+String _stepLabel(BillStep step, SplitMode mode, SplitStrings strings) {
   return switch (step) {
-    BillStep.detail => 'Detail',
-    BillStep.people => 'People',
-    BillStep.items => 'Items',
-    BillStep.charges => mode == SplitMode.custom ? 'Custom' : 'Charges',
-    BillStep.result => 'Result',
+    BillStep.detail => strings.billDetail,
+    BillStep.people => strings.people,
+    BillStep.items => strings.items,
+    BillStep.charges => mode == SplitMode.custom ? strings.custom : strings.charges,
+    BillStep.result => isEnglishResult(strings),
   };
 }
 
@@ -1088,14 +1113,14 @@ bool _chargesValid(DraftBill draft) {
   return draft.items.isNotEmpty;
 }
 
-String _advanceHelper(BillStep step, DraftBill draft) {
+String _advanceHelper(BillStep step, DraftBill draft, SplitStrings strings) {
   return switch (step) {
     BillStep.detail => '',
-    BillStep.people => 'Tambahkan minimal dua peserta.',
-    BillStep.items => 'Tambahkan minimal satu item.',
-    BillStep.charges => draft.mode == SplitMode.custom
-        ? 'Selesaikan custom amount hingga remaining Rp0.'
-        : 'Masukkan total tagihan terlebih dahulu.',
+    BillStep.people => strings.helperNeedPeople,
+    BillStep.items => strings.helperNeedItems,
+    BillStep.charges => draft.mode == SplitMode.custom ? strings.helperNeedCustom : strings.helperNeedTotal,
     BillStep.result => '',
   };
 }
+
+String isEnglishResult(SplitStrings strings) => strings.isEnglish ? 'Result' : 'Hasil';
