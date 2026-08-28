@@ -4,107 +4,144 @@ import 'split_tokens.dart';
 
 class SplitTheme {
   static ThemeData light() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: SplitPalette.lightPrimary,
-      brightness: Brightness.light,
-      primary: SplitPalette.lightPrimary,
-      secondary: SplitPalette.lightSecondary,
-      tertiary: SplitPalette.lightAccent,
-      surface: SplitPalette.lightSurface,
-    );
     return _build(
-      scheme.copyWith(
-        surfaceContainerHighest: SplitPalette.lightSurfaceElevated,
-        outline: SplitPalette.lightBorder,
-      ),
-      SplitPalette.lightBackground,
-      SplitPalette.lightText,
-      SplitPalette.lightTextMuted,
+      colors: SplitColors.light,
+      brightness: Brightness.light,
+      onPrimary: Colors.white,
     );
   }
 
   static ThemeData dark() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: SplitPalette.darkPrimary,
-      brightness: Brightness.dark,
-      primary: SplitPalette.darkPrimary,
-      secondary: SplitPalette.darkSecondary,
-      tertiary: SplitPalette.darkAccent,
-      surface: SplitPalette.darkSurface,
-    );
     return _build(
-      scheme.copyWith(
-        surfaceContainerHighest: SplitPalette.darkSurfaceElevated,
-        outline: SplitPalette.darkBorder,
-      ),
-      SplitPalette.darkBackground,
-      SplitPalette.darkText,
-      SplitPalette.darkTextMuted,
+      colors: SplitColors.dark,
+      brightness: Brightness.dark,
+      onPrimary: const Color(0xFF1A0F0B),
     );
   }
 
-  static ThemeData _build(
-    ColorScheme scheme,
-    Color background,
-    Color text,
-    Color textMuted,
-  ) {
-    final textTheme = Typography.material2021().black.apply(
-      bodyColor: text,
-      displayColor: text,
+  static ThemeData _build({
+    required SplitColors colors,
+    required Brightness brightness,
+    required Color onPrimary,
+  }) {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: colors.primary,
+      brightness: brightness,
+    ).copyWith(
+      primary: colors.primary,
+      onPrimary: onPrimary,
+      secondary: colors.secondary,
+      error: colors.danger,
+      surface: colors.surface,
+      onSurface: colors.textPrimary,
+      surfaceContainerHighest: colors.surfaceAlt,
+      outline: colors.border,
     );
+    final textTheme = Typography.material2021(platform: TargetPlatform.android)
+        .black
+        .apply(
+          bodyColor: colors.textPrimary,
+          displayColor: colors.textPrimary,
+          fontFamily: 'Plus Jakarta Sans',
+        );
 
     return ThemeData(
       useMaterial3: true,
-      brightness: scheme.brightness,
-      scaffoldBackgroundColor: background,
+      brightness: brightness,
+      scaffoldBackgroundColor: colors.background,
       colorScheme: scheme,
+      extensions: <ThemeExtension<dynamic>>[colors],
       textTheme: textTheme.copyWith(
+        headlineMedium: textTheme.headlineMedium?.copyWith(
+          fontSize: 24,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0,
+        ),
         headlineSmall: textTheme.headlineSmall?.copyWith(
-          fontWeight: FontWeight.w700,
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
           letterSpacing: 0,
         ),
         titleLarge: textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.w700,
+          fontSize: 16,
+          fontWeight: FontWeight.w800,
           letterSpacing: 0,
         ),
         titleMedium: textTheme.titleMedium?.copyWith(
+          fontSize: 14.5,
           fontWeight: FontWeight.w700,
           letterSpacing: 0,
         ),
-        bodyMedium: textTheme.bodyMedium?.copyWith(
+        titleSmall: textTheme.titleSmall?.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
           letterSpacing: 0,
-          color: textMuted,
+        ),
+        bodyLarge: textTheme.bodyLarge?.copyWith(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0,
+        ),
+        bodyMedium: textTheme.bodyMedium?.copyWith(
+          fontSize: 13.5,
+          color: colors.textSecondary,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0,
+        ),
+        labelLarge: textTheme.labelLarge?.copyWith(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0,
+        ),
+        labelMedium: textTheme.labelMedium?.copyWith(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0,
         ),
       ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       cardTheme: CardThemeData(
-        color: scheme.surface,
+        color: colors.surface,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(SplitRadius.lg),
-          side: BorderSide(color: scheme.outline.withValues(alpha: 0.72)),
+          side: BorderSide(color: colors.border),
         ),
       ),
+      dividerColor: colors.border,
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: scheme.surface,
+        fillColor: colors.surfaceAlt,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: SplitSpacing.lg,
+          vertical: SplitSpacing.md,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(SplitRadius.md),
-          borderSide: BorderSide(color: scheme.outline),
+          borderSide: BorderSide(color: colors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(SplitRadius.md),
-          borderSide: BorderSide(color: scheme.outline),
+          borderSide: BorderSide(color: colors.border),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(SplitRadius.md),
-          borderSide: BorderSide(color: scheme.primary, width: 1.6),
+          borderSide: BorderSide(color: colors.primary, width: 1.6),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(SplitRadius.md),
+          borderSide: BorderSide(color: colors.danger),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size.fromHeight(52),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SplitRadius.md),
           ),
@@ -113,10 +150,16 @@ class SplitTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: const Size.fromHeight(52),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(SplitRadius.md),
           ),
         ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: colors.textPrimary,
+        contentTextStyle: TextStyle(color: colors.surface),
       ),
     );
   }

@@ -18,11 +18,11 @@ Aturan kerja:
 
 ## 2. Design Foundation
 
-- [ ] Selaraskan spacing, radius, palette light/dark, typography, dan app theme dengan referensi.
-- [ ] Tambahkan reusable component foundation: card, screen layout, buttons, text field, empty state, warning banner, participant avatar/chip, mode badge, summary row, money text, dan floating nav.
-- [ ] Pastikan widget foundation tetap memakai Material icons dan tidak membutuhkan dependency baru yang belum tersedia lokal.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint design foundation.
+- [x] Selaraskan spacing, radius, palette light/dark, typography, dan app theme dengan referensi.
+- [x] Tambahkan reusable component foundation: card, screen layout, buttons, text field, empty state, warning banner, participant avatar/chip, mode badge, summary row, money text, dan floating nav.
+- [x] Pastikan widget foundation tetap memakai Material icons dan tidak membutuhkan dependency baru yang belum tersedia lokal.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint design foundation.
 
 ## 3. Home, Settings, Dan Navigation
 
