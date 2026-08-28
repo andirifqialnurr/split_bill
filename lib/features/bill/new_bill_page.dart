@@ -51,9 +51,14 @@ class _NewBillPageState extends State<NewBillPage> {
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
             children: [
               _Header(controller: widget.controller),
-              _StepIndicator(step: widget.controller.state.currentStep),
+              _StepIndicator(
+                step: widget.controller.state.currentStep,
+                steps: _stepsFor(draft.mode),
+                mode: draft.mode,
+              ),
               _buildStep(context, draft),
               _FooterActions(
+                draft: draft,
                 controller: widget.controller,
                 onSave: () => _save(context),
               ),
@@ -69,7 +74,6 @@ class _NewBillPageState extends State<NewBillPage> {
       BillStep.detail => _DetailStep(
           draft: draft,
           titleController: titleController,
-          totalController: totalController,
           controller: widget.controller,
         ),
       BillStep.people => _PeopleStep(
@@ -84,7 +88,11 @@ class _NewBillPageState extends State<NewBillPage> {
           totalController: itemTotalController,
           controller: widget.controller,
         ),
-      BillStep.charges => _ChargesStep(draft: draft, controller: widget.controller),
+      BillStep.charges => _ChargesStep(
+          draft: draft,
+          totalController: totalController,
+          controller: widget.controller,
+        ),
       BillStep.result => _ResultStep(controller: widget.controller, onSave: () => _save(context)),
     };
   }
@@ -113,9 +121,10 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        IconButton.filledTonal(
+        SplitIconButton(
+          tooltip: 'Close',
+          icon: Icons.close_rounded,
           onPressed: () => _close(context),
-          icon: const Icon(Icons.close_rounded),
         ),
         const SizedBox(width: SplitSpacing.md),
         Expanded(
@@ -158,33 +167,61 @@ class _Header extends StatelessWidget {
 }
 
 class _StepIndicator extends StatelessWidget {
-  const _StepIndicator({required this.step});
+  const _StepIndicator({
+    required this.step,
+    required this.steps,
+    required this.mode,
+  });
 
   final BillStep step;
+  final List<BillStep> steps;
+  final SplitMode mode;
 
   @override
   Widget build(BuildContext context) {
-    final labels = {
-      BillStep.detail: 'Detail',
-      BillStep.people: 'People',
-      BillStep.items: 'Items',
-      BillStep.charges: 'Charges',
-      BillStep.result: 'Result',
-    };
-    final activeIndex = BillStep.values.indexOf(step);
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
+    final activeIndex = steps.indexOf(step).clamp(0, steps.length - 1);
+    return SplitCard(
+      padding: const EdgeInsets.all(SplitSpacing.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          for (var index = 0; index < BillStep.values.length; index++) ...[
-            _StepPill(
-              label: labels[BillStep.values[index]]!,
-              active: index == activeIndex,
-              done: index < activeIndex,
+          Row(
+            children: [
+              SplitModeBadge(mode: mode),
+              const Spacer(),
+              Text(
+                '${activeIndex + 1}/${steps.length}',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: context.splitColors.textMuted,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: SplitSpacing.md),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(SplitRadius.pill),
+            child: LinearProgressIndicator(
+              value: (activeIndex + 1) / steps.length,
+              minHeight: 8,
+              backgroundColor: context.splitColors.surfaceAlt,
             ),
-            if (index != BillStep.values.length - 1)
-              const SizedBox(width: SplitSpacing.sm),
-          ],
+          ),
+          const SizedBox(height: SplitSpacing.md),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                for (var index = 0; index < steps.length; index++) ...[
+                  _StepPill(
+                    label: _stepLabel(steps[index], mode),
+                    active: index == activeIndex,
+                    done: index < activeIndex,
+                  ),
+                  if (index != steps.length - 1) const SizedBox(width: SplitSpacing.sm),
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -204,15 +241,15 @@ class _StepPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final colors = context.splitColors;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: SplitSpacing.md,
         vertical: SplitSpacing.sm,
       ),
       decoration: BoxDecoration(
-        color: active ? scheme.primary : scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(SplitRadius.sm),
+        color: active ? colors.primary : colors.surfaceAlt,
+        borderRadius: BorderRadius.circular(SplitRadius.pill),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -220,14 +257,13 @@ class _StepPill extends StatelessWidget {
           Icon(
             done ? Icons.check_rounded : Icons.circle_rounded,
             size: 12,
-            color: active ? scheme.onPrimary : scheme.onSurfaceVariant,
+            color: active ? Colors.white : colors.textMuted,
           ),
           const SizedBox(width: SplitSpacing.xs),
           Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: active ? scheme.onPrimary : scheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w800,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: active ? Colors.white : colors.textSecondary,
                 ),
           ),
         ],
@@ -240,13 +276,11 @@ class _DetailStep extends StatelessWidget {
   const _DetailStep({
     required this.draft,
     required this.titleController,
-    required this.totalController,
     required this.controller,
   });
 
   final DraftBill draft;
   final TextEditingController titleController;
-  final TextEditingController totalController;
   final SplitBillController controller;
 
   @override
@@ -254,62 +288,38 @@ class _DetailStep extends StatelessWidget {
     if (titleController.text != draft.title) {
       titleController.text = draft.title;
     }
-    final totalText = draft.equalTotalAmount == 0 ? '' : draft.equalTotalAmount.toString();
-    if (totalController.text != totalText && totalController.text.isEmpty) {
-      totalController.text = totalText;
-    }
 
-    return SplitCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Bill detail', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: SplitSpacing.lg),
-          TextField(
-            controller: titleController,
-            textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(
-              labelText: 'Title',
-              hintText: 'Dinner at Braga',
-            ),
-            onChanged: controller.setTitle,
-          ),
-          const SizedBox(height: SplitSpacing.md),
-          SegmentedButton<SplitMode>(
-            segments: const [
-              ButtonSegment(
-                value: SplitMode.items,
-                label: Text('Items'),
-                icon: Icon(Icons.receipt_long_rounded),
-              ),
-              ButtonSegment(
-                value: SplitMode.equal,
-                label: Text('Equal'),
-                icon: Icon(Icons.drag_handle_rounded),
-              ),
-              ButtonSegment(
-                value: SplitMode.custom,
-                label: Text('Custom'),
-                icon: Icon(Icons.edit_note_rounded),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SplitCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Bill detail', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: SplitSpacing.lg),
+              SplitTextField(
+                controller: titleController,
+                label: 'Title',
+                hint: 'Dinner at Braga',
+                textInputAction: TextInputAction.next,
+                onChanged: controller.setTitle,
               ),
             ],
-            selected: {draft.mode},
-            onSelectionChanged: (value) => controller.setMode(value.first),
           ),
-          if (draft.mode != SplitMode.items) ...[
-            const SizedBox(height: SplitSpacing.md),
-            TextField(
-              controller: totalController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Bill total',
-                prefixText: 'Rp ',
-              ),
-              onChanged: controller.setBillTotal,
-            ),
-          ],
+        ),
+        const SizedBox(height: SplitSpacing.lg),
+        const SplitSectionLabel('Split Mode'),
+        const SizedBox(height: SplitSpacing.md),
+        for (final mode in SplitMode.values) ...[
+          SplitModeCard(
+            mode: mode,
+            selected: draft.mode == mode,
+            onTap: () => controller.setMode(mode),
+          ),
+          const SizedBox(height: SplitSpacing.sm),
         ],
-      ),
+      ],
     );
   }
 }
@@ -327,38 +337,39 @@ class _PeopleStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final remaining = draft.equalTotalAmount -
-        draft.customShares.values.fold<int>(0, (sum, amount) => sum + amount);
     return SplitCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('People', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: SplitSpacing.xs),
+          Text('Tambahkan minimal dua peserta untuk membagi tagihan.', style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: SplitSpacing.lg),
           Row(
             children: [
               Expanded(
-                child: TextField(
+                child: SplitTextField(
                   controller: participantController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nickname',
-                    hintText: 'Ayu',
-                  ),
+                  label: 'Nickname',
+                  hint: 'Ayu',
+                  textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addParticipant(),
                 ),
               ),
               const SizedBox(width: SplitSpacing.sm),
-              IconButton.filled(
+              SplitIconButton(
+                tooltip: 'Add person',
+                icon: Icons.add_rounded,
                 onPressed: _addParticipant,
-                icon: const Icon(Icons.add_rounded),
               ),
             ],
           ),
           const SizedBox(height: SplitSpacing.lg),
           if (draft.participants.isEmpty)
-            const _InlineNotice(
+            const SplitEmptyState(
               icon: Icons.person_add_alt_1_rounded,
-              text: 'Add at least one participant.',
+              title: 'Belum ada peserta',
+              message: 'Masukkan nama panggilan satu per satu.',
             )
           else
             Wrap(
@@ -366,38 +377,13 @@ class _PeopleStep extends StatelessWidget {
               runSpacing: SplitSpacing.sm,
               children: [
                 for (final participant in draft.participants)
-                  InputChip(
-                    avatar: CircleAvatar(child: Text(participant.initial)),
-                    label: Text(participant.name),
-                    onPressed: () => _rename(context, participant),
+                  SplitParticipantChip(
+                    participant: participant,
+                    onTap: () => _rename(context, participant),
                     onDeleted: () => _remove(context, participant),
                   ),
               ],
             ),
-          if (draft.mode == SplitMode.custom && draft.participants.isNotEmpty) ...[
-            const SizedBox(height: SplitSpacing.lg),
-            Text('Custom amounts', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: SplitSpacing.sm),
-            for (final participant in draft.participants) ...[
-              TextFormField(
-                key: ValueKey('custom-${participant.localId}'),
-                initialValue: (draft.customShares[participant.localId] ?? 0) == 0
-                    ? ''
-                    : (draft.customShares[participant.localId] ?? 0).toString(),
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: participant.name,
-                  prefixText: 'Rp ',
-                ),
-                onChanged: (value) => controller.setCustomShare(participant.localId, value),
-              ),
-              const SizedBox(height: SplitSpacing.sm),
-            ],
-            _InlineNotice(
-              icon: remaining == 0 ? Icons.check_circle_rounded : Icons.pending_rounded,
-              text: 'Remaining ${formatRupiah(remaining)}',
-            ),
-          ],
         ],
       ),
     );
@@ -488,51 +474,44 @@ class _ItemsStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (draft.mode != SplitMode.items) {
-      return const SplitCard(
-        child: _InlineNotice(
-          icon: Icons.task_alt_rounded,
-          text: 'No item entry needed for this split mode.',
-        ),
-      );
-    }
-
     return SplitCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Items', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: SplitSpacing.xs),
+          Text('Tambahkan item, lalu pilih siapa yang ikut membayar.', style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: SplitSpacing.lg),
-          TextField(
+          SplitTextField(
             controller: nameController,
-            decoration: const InputDecoration(labelText: 'Item name'),
+            label: 'Item name',
+            hint: 'Ayam bakar madu',
           ),
           const SizedBox(height: SplitSpacing.sm),
           Row(
             children: [
               SizedBox(
                 width: 92,
-                child: TextField(
+                child: SplitTextField(
                   controller: quantityController,
+                  label: 'Qty',
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Qty'),
                 ),
               ),
               const SizedBox(width: SplitSpacing.sm),
               Expanded(
-                child: TextField(
+                child: SplitTextField(
                   controller: totalController,
+                  label: 'Total price',
+                  prefixText: 'Rp ',
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Total price',
-                    prefixText: 'Rp ',
-                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: SplitSpacing.sm),
-          FilledButton.icon(
+          const SizedBox(height: SplitSpacing.md),
+          SplitGhostAddButton(
+            label: 'Tambah Item',
             onPressed: () {
               controller.addItem(
                 name: nameController.text,
@@ -543,25 +522,28 @@ class _ItemsStep extends StatelessWidget {
               quantityController.text = '1';
               totalController.clear();
             },
-            icon: const Icon(Icons.add_shopping_cart_rounded),
-            label: const Text('Add Item'),
           ),
           const SizedBox(height: SplitSpacing.lg),
           if (draft.items.isEmpty)
-            const _InlineNotice(
+            const SplitEmptyState(
               icon: Icons.playlist_add_rounded,
-              text: 'Add item totals, then assign people.',
+              title: 'Belum ada item',
+              message: 'Tambahkan item satu per satu, lalu tentukan peserta.',
             )
           else
-            for (final item in draft.items) ...[
-              _ItemTile(
-                item: item,
-                participants: draft.participants,
-                onAssign: () => _showAssignSheet(context, item),
-                onDelete: () => controller.removeItem(item.localId),
-              ),
-              const SizedBox(height: SplitSpacing.sm),
-            ],
+            Column(
+              children: [
+                for (final item in draft.items) ...[
+                  _ItemTile(
+                    item: item,
+                    participants: draft.participants,
+                    onAssign: () => _showAssignSheet(context, item),
+                    onDelete: () => controller.removeItem(item.localId),
+                  ),
+                  if (item != draft.items.last) const SizedBox(height: SplitSpacing.sm),
+                ],
+              ],
+            ),
         ],
       ),
     );
@@ -582,23 +564,27 @@ class _ItemsStep extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item.name, style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      item.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: SplitSpacing.md),
                     Wrap(
                       spacing: SplitSpacing.sm,
                       runSpacing: SplitSpacing.sm,
                       children: [
                         for (final participant in draft.participants)
-                          FilterChip(
-                            label: Text(participant.name),
-                            avatar: CircleAvatar(child: Text(participant.initial)),
+                          SplitParticipantChip(
+                            participant: participant,
                             selected: selected.contains(participant.localId),
-                            onSelected: (isSelected) {
+                            onTap: () {
                               setSheetState(() {
-                                if (isSelected) {
-                                  selected.add(participant.localId);
-                                } else {
+                                if (selected.contains(participant.localId)) {
                                   selected.remove(participant.localId);
+                                } else {
+                                  selected.add(participant.localId);
                                 }
                               });
                             },
@@ -609,7 +595,9 @@ class _ItemsStep extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: OutlinedButton(
+                          child: SplitSecondaryButton(
+                            label: 'Select All',
+                            icon: Icons.done_all_rounded,
                             onPressed: () {
                               setSheetState(() {
                                 selected
@@ -617,17 +605,17 @@ class _ItemsStep extends StatelessWidget {
                                   ..addAll(draft.participants.map((p) => p.localId));
                               });
                             },
-                            child: const Text('Select All'),
                           ),
                         ),
                         const SizedBox(width: SplitSpacing.sm),
                         Expanded(
-                          child: FilledButton(
+                          child: SplitPrimaryButton(
+                            label: 'Done',
+                            icon: Icons.check_rounded,
                             onPressed: () {
                               controller.setItemParticipants(item.localId, selected.toList());
                               Navigator.of(context).pop();
                             },
-                            child: const Text('Done'),
                           ),
                         ),
                       ],
@@ -658,63 +646,145 @@ class _ItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final assignedNames = participants
+    final assigned = participants
         .where((participant) => item.participantIds.contains(participant.localId))
-        .map((participant) => participant.name)
-        .join(', ');
+        .toList(growable: false);
+    final colors = context.splitColors;
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      color: colors.surfaceAlt,
       borderRadius: BorderRadius.circular(SplitRadius.md),
-      child: ListTile(
-        title: Text(
-          item.name,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          assignedNames.isEmpty ? 'Unassigned' : assignedNames,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: Wrap(
-          spacing: SplitSpacing.xs,
-          children: [
-            IconButton(
-              tooltip: 'Assign',
-              onPressed: onAssign,
-              icon: const Icon(Icons.group_add_rounded),
-            ),
-            IconButton(
-              tooltip: 'Delete',
-              onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline_rounded),
-            ),
-          ],
-        ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(SplitRadius.md),
         onTap: onAssign,
+        child: Padding(
+          padding: const EdgeInsets.all(SplitSpacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      item.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  const SizedBox(width: SplitSpacing.sm),
+                  SplitIconButton(
+                    tooltip: 'Delete item',
+                    icon: Icons.delete_outline_rounded,
+                    onPressed: onDelete,
+                  ),
+                ],
+              ),
+              const SizedBox(height: SplitSpacing.xs),
+              Text(
+                '${item.quantity}x • ${formatRupiah(item.totalAmount)}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: SplitSpacing.md),
+              Row(
+                children: [
+                  if (assigned.isEmpty)
+                    _UnassignedBadge()
+                  else
+                    Flexible(child: SplitAvatarStack(participants: assigned)),
+                  const Spacer(),
+                  Icon(Icons.chevron_right_rounded, color: colors.textMuted),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _UnassignedBadge extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.splitColors;
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: SplitSpacing.md,
+        vertical: SplitSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: colors.warningSoft,
+        borderRadius: BorderRadius.circular(SplitRadius.pill),
+      ),
+      child: Text(
+        'Unassigned',
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.warning),
       ),
     );
   }
 }
 
 class _ChargesStep extends StatelessWidget {
-  const _ChargesStep({required this.draft, required this.controller});
+  const _ChargesStep({
+    required this.draft,
+    required this.totalController,
+    required this.controller,
+  });
 
   final DraftBill draft;
+  final TextEditingController totalController;
   final SplitBillController controller;
 
   @override
   Widget build(BuildContext context) {
+    final totalText = draft.equalTotalAmount == 0 ? '' : draft.equalTotalAmount.toString();
+    if (totalController.text != totalText && totalController.text.isEmpty) {
+      totalController.text = totalText;
+    }
+    final subtotal = _draftSubtotal();
     final calculation = controller.currentCalculation;
-    final subtotal = calculation?.subtotal ?? _draftSubtotal();
-    final grandTotal = calculation?.grandTotal ?? subtotal;
+    final grandTotal = calculation?.grandTotal ??
+        subtotal + draft.tax.resolve(subtotal) + draft.service.resolve(subtotal) - draft.discount.resolve(subtotal);
     return SplitCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Charges', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: SplitSpacing.sm),
-          Text('Subtotal ${formatRupiah(subtotal)}'),
+          Text(
+            draft.mode == SplitMode.custom ? 'Custom Amount' : 'Charges',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: SplitSpacing.xs),
+          Text(
+            draft.mode == SplitMode.custom
+                ? 'Isi total dasar dan alokasi tiap peserta sebelum biaya tambahan.'
+                : 'Atur pajak, layanan, dan diskon bila ada.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: SplitSpacing.lg),
+          if (draft.mode == SplitMode.equal) ...[
+            SplitTextField(
+              controller: totalController,
+              label: 'Bill total',
+              prefixText: 'Rp ',
+              keyboardType: TextInputType.number,
+              onChanged: controller.setBillTotal,
+            ),
+            const SizedBox(height: SplitSpacing.lg),
+          ],
+          if (draft.mode == SplitMode.custom) ...[
+            _CustomAmountEditor(
+              draft: draft,
+              totalController: totalController,
+              controller: controller,
+            ),
+            const SizedBox(height: SplitSpacing.lg),
+          ],
+          SplitSummaryRow(
+            label: draft.mode == SplitMode.items ? 'Subtotal (from items)' : 'Subtotal',
+            value: formatRupiah(subtotal),
+            bold: true,
+          ),
           const SizedBox(height: SplitSpacing.lg),
           _ChargeEditor(label: 'Tax', charge: draft.tax, onChanged: controller.setTax),
           const SizedBox(height: SplitSpacing.md),
@@ -722,9 +792,29 @@ class _ChargesStep extends StatelessWidget {
           const SizedBox(height: SplitSpacing.md),
           _ChargeEditor(label: 'Discount', charge: draft.discount, onChanged: controller.setDiscount),
           const SizedBox(height: SplitSpacing.lg),
-          _InlineNotice(
-            icon: Icons.payments_rounded,
-            text: 'Preview total ${formatRupiah(grandTotal)}',
+          Container(
+            padding: const EdgeInsets.all(SplitSpacing.lg),
+            decoration: BoxDecoration(
+              color: context.splitColors.primarySoft.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(SplitRadius.lg),
+            ),
+            child: Column(
+              children: [
+                SplitSummaryRow(label: 'Subtotal', value: formatRupiah(subtotal)),
+                if (draft.tax.type != ChargeType.none)
+                  SplitSummaryRow(label: 'Tax', value: '+ ${formatRupiah(draft.tax.resolve(subtotal))}'),
+                if (draft.service.type != ChargeType.none)
+                  SplitSummaryRow(label: 'Service', value: '+ ${formatRupiah(draft.service.resolve(subtotal))}'),
+                if (draft.discount.type != ChargeType.none)
+                  SplitSummaryRow(
+                    label: 'Discount',
+                    value: '- ${formatRupiah(draft.discount.resolve(subtotal))}',
+                    valueColor: context.splitColors.success,
+                  ),
+                Divider(color: context.splitColors.border),
+                SplitSummaryRow(label: 'Grand Total', value: formatRupiah(grandTotal.clamp(0, 1 << 62)), bold: true),
+              ],
+            ),
           ),
         ],
       ),
@@ -736,6 +826,73 @@ class _ChargesStep extends StatelessWidget {
       SplitMode.items => draft.items.fold<int>(0, (sum, item) => sum + item.totalAmount),
       SplitMode.equal || SplitMode.custom => draft.equalTotalAmount,
     };
+  }
+}
+
+class _CustomAmountEditor extends StatelessWidget {
+  const _CustomAmountEditor({
+    required this.draft,
+    required this.totalController,
+    required this.controller,
+  });
+
+  final DraftBill draft;
+  final TextEditingController totalController;
+  final SplitBillController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final allocated = draft.customShares.values.fold<int>(0, (sum, amount) => sum + amount);
+    final remaining = draft.equalTotalAmount - allocated;
+    final ok = remaining == 0 && draft.equalTotalAmount > 0;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SplitTextField(
+          controller: totalController,
+          label: 'Total to split',
+          prefixText: 'Rp ',
+          keyboardType: TextInputType.number,
+          onChanged: controller.setBillTotal,
+        ),
+        const SizedBox(height: SplitSpacing.md),
+        SplitWarningBanner(
+          message: ok ? 'Semua alokasi sudah pas.' : 'Remaining ${formatRupiah(remaining)}.',
+          isError: !ok,
+        ),
+        const SizedBox(height: SplitSpacing.lg),
+        for (final participant in draft.participants) ...[
+          Row(
+            children: [
+              SplitParticipantAvatar(participant: participant),
+              const SizedBox(width: SplitSpacing.md),
+              Expanded(
+                child: Text(
+                  participant.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(width: SplitSpacing.md),
+              SizedBox(
+                width: 136,
+                child: TextFormField(
+                  key: ValueKey('custom-${participant.localId}-${draft.customShares[participant.localId] ?? 0}'),
+                  initialValue: (draft.customShares[participant.localId] ?? 0) == 0
+                      ? ''
+                      : (draft.customShares[participant.localId] ?? 0).toString(),
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(prefixText: 'Rp '),
+                  onChanged: (value) => controller.setCustomShare(participant.localId, value),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: SplitSpacing.sm),
+        ],
+      ],
+    );
   }
 }
 
@@ -752,46 +909,51 @@ class _ChargeEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: SplitSpacing.sm),
-        SegmentedButton<ChargeType>(
-          segments: const [
-            ButtonSegment(value: ChargeType.none, label: Text('None')),
-            ButtonSegment(value: ChargeType.fixed, label: Text('Rp')),
-            ButtonSegment(value: ChargeType.percentage, label: Text('%')),
-          ],
-          selected: {charge.type},
-          onSelectionChanged: (value) {
-            onChanged(charge.copyWith(type: value.first, value: 0));
-          },
-        ),
-        if (charge.type != ChargeType.none) ...[
+    return SplitCard(
+      padding: const EdgeInsets.all(SplitSpacing.md),
+      backgroundColor: context.splitColors.surfaceAlt,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: SplitSpacing.sm),
-          TextFormField(
-            key: ValueKey('$label-${charge.type}'),
-            initialValue: charge.value == 0
-                ? ''
-                : charge.type == ChargeType.percentage
-                    ? (charge.value / 100).toString()
-                    : charge.value.toString(),
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: charge.type == ChargeType.percentage ? '$label percent' : '$label amount',
-              prefixText: charge.type == ChargeType.fixed ? 'Rp ' : null,
-              suffixText: charge.type == ChargeType.percentage ? '%' : null,
-            ),
-            onChanged: (value) {
-              final parsed = charge.type == ChargeType.percentage
-                  ? percentageToBasisPoints(value)
-                  : parseRupiah(value);
-              onChanged(charge.copyWith(value: parsed));
+          SegmentedButton<ChargeType>(
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(value: ChargeType.none, label: Text('None')),
+              ButtonSegment(value: ChargeType.fixed, label: Text('Rp')),
+              ButtonSegment(value: ChargeType.percentage, label: Text('%')),
+            ],
+            selected: {charge.type},
+            onSelectionChanged: (value) {
+              onChanged(charge.copyWith(type: value.first, value: 0));
             },
           ),
+          if (charge.type != ChargeType.none) ...[
+            const SizedBox(height: SplitSpacing.sm),
+            TextFormField(
+              key: ValueKey('$label-${charge.type}-${charge.value}'),
+              initialValue: charge.value == 0
+                  ? ''
+                  : charge.type == ChargeType.percentage
+                      ? (charge.value / 100).toString()
+                      : charge.value.toString(),
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: charge.type == ChargeType.percentage ? '$label percent' : '$label amount',
+                prefixText: charge.type == ChargeType.fixed ? 'Rp ' : null,
+                suffixText: charge.type == ChargeType.percentage ? '%' : null,
+              ),
+              onChanged: (value) {
+                final parsed = charge.type == ChargeType.percentage
+                    ? percentageToBasisPoints(value)
+                    : parseRupiah(value);
+                onChanged(charge.copyWith(value: parsed));
+              },
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }
@@ -818,77 +980,114 @@ class _ResultStep extends StatelessWidget {
         onSave: onSave,
       );
     } on BillValidationException catch (error) {
-      return SplitCard(
-        child: _InlineNotice(
-          icon: Icons.error_outline_rounded,
-          text: error.message,
-        ),
-      );
+      return SplitWarningBanner(message: error.message, isError: true);
     }
   }
 }
 
 class _FooterActions extends StatelessWidget {
   const _FooterActions({
+    required this.draft,
     required this.controller,
     required this.onSave,
   });
 
+  final DraftBill draft;
   final SplitBillController controller;
   final VoidCallback onSave;
 
   @override
   Widget build(BuildContext context) {
     final step = controller.state.currentStep;
-    return Row(
+    final canAdvance = _canAdvance(step, draft);
+    final isFirst = step == _stepsFor(draft.mode).first;
+    final isResult = step == BillStep.result;
+    return Column(
       children: [
-        if (step != BillStep.detail)
-          Expanded(
-            child: OutlinedButton.icon(
-              onPressed: controller.previousStep,
-              icon: const Icon(Icons.arrow_back_rounded),
-              label: const Text('Back'),
+        if (!canAdvance && !isResult) ...[
+          SplitWarningBanner(message: _advanceHelper(step, draft), isError: true),
+          const SizedBox(height: SplitSpacing.sm),
+        ],
+        Row(
+          children: [
+            if (!isFirst)
+              Expanded(
+                child: SplitSecondaryButton(
+                  label: 'Back',
+                  icon: Icons.arrow_back_rounded,
+                  onPressed: controller.previousStep,
+                ),
+              ),
+            if (!isFirst) const SizedBox(width: SplitSpacing.sm),
+            Expanded(
+              child: SplitPrimaryButton(
+                label: isResult ? 'Save Bill' : 'Next',
+                icon: isResult ? Icons.save_rounded : Icons.arrow_forward_rounded,
+                onPressed: isResult ? onSave : (canAdvance ? controller.nextStep : null),
+              ),
             ),
-          ),
-        if (step != BillStep.detail) const SizedBox(width: SplitSpacing.sm),
-        Expanded(
-          child: FilledButton.icon(
-            onPressed: step == BillStep.result ? onSave : controller.nextStep,
-            icon: Icon(step == BillStep.result ? Icons.save_rounded : Icons.arrow_forward_rounded),
-            label: Text(step == BillStep.result ? 'Save Bill' : 'Next'),
-          ),
+          ],
         ),
       ],
     );
   }
 }
 
-class _InlineNotice extends StatelessWidget {
-  const _InlineNotice({
-    required this.icon,
-    required this.text,
-  });
+List<BillStep> _stepsFor(SplitMode mode) {
+  return switch (mode) {
+    SplitMode.items => const [
+        BillStep.detail,
+        BillStep.people,
+        BillStep.items,
+        BillStep.charges,
+        BillStep.result,
+      ],
+    SplitMode.equal || SplitMode.custom => const [
+        BillStep.detail,
+        BillStep.people,
+        BillStep.charges,
+        BillStep.result,
+      ],
+  };
+}
 
-  final IconData icon;
-  final String text;
+String _stepLabel(BillStep step, SplitMode mode) {
+  return switch (step) {
+    BillStep.detail => 'Detail',
+    BillStep.people => 'People',
+    BillStep.items => 'Items',
+    BillStep.charges => mode == SplitMode.custom ? 'Custom' : 'Charges',
+    BillStep.result => 'Result',
+  };
+}
 
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(SplitSpacing.md),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(SplitRadius.md),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: scheme.primary),
-          const SizedBox(width: SplitSpacing.sm),
-          Expanded(child: Text(text)),
-        ],
-      ),
-    );
+bool _canAdvance(BillStep step, DraftBill draft) {
+  return switch (step) {
+    BillStep.detail => true,
+    BillStep.people => draft.participants.length >= 2,
+    BillStep.items => draft.items.isNotEmpty,
+    BillStep.charges => _chargesValid(draft),
+    BillStep.result => true,
+  };
+}
+
+bool _chargesValid(DraftBill draft) {
+  if (draft.mode == SplitMode.equal && draft.equalTotalAmount <= 0) return false;
+  if (draft.mode == SplitMode.custom) {
+    final allocated = draft.customShares.values.fold<int>(0, (sum, amount) => sum + amount);
+    return draft.equalTotalAmount > 0 && allocated == draft.equalTotalAmount;
   }
+  return draft.items.isNotEmpty;
+}
+
+String _advanceHelper(BillStep step, DraftBill draft) {
+  return switch (step) {
+    BillStep.detail => '',
+    BillStep.people => 'Tambahkan minimal dua peserta.',
+    BillStep.items => 'Tambahkan minimal satu item.',
+    BillStep.charges => draft.mode == SplitMode.custom
+        ? 'Selesaikan custom amount hingga remaining Rp0.'
+        : 'Masukkan total tagihan terlebih dahulu.',
+    BillStep.result => '',
+  };
 }

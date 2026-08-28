@@ -106,15 +106,44 @@ class SplitBillController extends ChangeNotifier {
   }
 
   void nextStep() {
-    final index = BillStep.values.indexOf(_state.currentStep);
-    if (index >= BillStep.values.length - 1) return;
-    setStep(BillStep.values[index + 1]);
+    final steps = _activeSteps();
+    final index = steps.indexOf(_state.currentStep);
+    if (index < 0) {
+      setStep(steps.first);
+      return;
+    }
+    if (index >= steps.length - 1) return;
+    setStep(steps[index + 1]);
   }
 
   void previousStep() {
-    final index = BillStep.values.indexOf(_state.currentStep);
+    final steps = _activeSteps();
+    final index = steps.indexOf(_state.currentStep);
+    if (index < 0) {
+      setStep(steps.first);
+      return;
+    }
     if (index <= 0) return;
-    setStep(BillStep.values[index - 1]);
+    setStep(steps[index - 1]);
+  }
+
+  List<BillStep> _activeSteps() {
+    final mode = _state.draft?.mode ?? SplitMode.items;
+    return switch (mode) {
+      SplitMode.items => const [
+          BillStep.detail,
+          BillStep.people,
+          BillStep.items,
+          BillStep.charges,
+          BillStep.result,
+        ],
+      SplitMode.equal || SplitMode.custom => const [
+          BillStep.detail,
+          BillStep.people,
+          BillStep.charges,
+          BillStep.result,
+        ],
+    };
   }
 
   void updateDraft(DraftBill Function(DraftBill draft) update) {

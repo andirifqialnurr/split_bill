@@ -34,13 +34,13 @@ Aturan kerja:
 
 ## 4. New Bill Wizard
 
-- [ ] Migrasikan step detail dan mode selection.
-- [ ] Migrasikan people step dengan avatar/chip, edit, remove, dan cleanup confirmation.
-- [ ] Migrasikan item entry, item tile, assignment sheet, dan unassigned state.
-- [ ] Migrasikan charges/custom amount/review dengan validation helper yang jelas.
-- [ ] Pastikan draft tidak hilang saat pindah step atau menekan back.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint wizard.
+- [x] Migrasikan step detail dan mode selection.
+- [x] Migrasikan people step dengan avatar/chip, edit, remove, dan cleanup confirmation.
+- [x] Migrasikan item entry, item tile, assignment sheet, dan unassigned state.
+- [x] Migrasikan charges/custom amount/review dengan validation helper yang jelas.
+- [x] Pastikan draft tidak hilang saat pindah step atau menekan back.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint wizard.
 
 ## 5. Result, History, Dan Acceptance
 
