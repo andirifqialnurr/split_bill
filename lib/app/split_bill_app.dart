@@ -77,6 +77,8 @@ class SplitShell extends StatelessWidget {
       bottomNavigationBar: SplitFloatingNav(
         activeTab: state.activeTab,
         onChanged: controller.setTab,
+        billsLabel: controller.strings.bills,
+        settingsLabel: controller.strings.settings,
       ),
     );
   }

@@ -568,9 +568,14 @@ class SplitAvatarStack extends StatelessWidget {
 }
 
 class SplitModeBadge extends StatelessWidget {
-  const SplitModeBadge({super.key, required this.mode});
+  const SplitModeBadge({
+    super.key,
+    required this.mode,
+    this.label,
+  });
 
   final SplitMode mode;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -590,7 +595,7 @@ class SplitModeBadge extends StatelessWidget {
           Icon(splitModeIcon(mode), color: colors.secondary, size: 15),
           const SizedBox(width: SplitSpacing.xs),
           Text(
-            splitModeLabel(mode),
+            label ?? splitModeLabel(mode),
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: colors.secondary,
                 ),
@@ -607,11 +612,15 @@ class SplitModeCard extends StatelessWidget {
     required this.mode,
     required this.selected,
     required this.onTap,
+    this.label,
+    this.description,
   });
 
   final SplitMode mode;
   final bool selected;
   final VoidCallback onTap;
+  final String? label;
+  final String? description;
 
   @override
   Widget build(BuildContext context) {
@@ -639,9 +648,9 @@ class SplitModeCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(splitModeLabel(mode), style: Theme.of(context).textTheme.titleMedium),
+                Text(label ?? splitModeLabel(mode), style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: SplitSpacing.xs),
-                Text(splitModeDescription(mode), style: Theme.of(context).textTheme.bodyMedium),
+                Text(description ?? splitModeDescription(mode), style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
           ),
@@ -661,10 +670,14 @@ class SplitFloatingNav extends StatelessWidget {
     super.key,
     required this.activeTab,
     required this.onChanged,
+    this.billsLabel = 'Bills',
+    this.settingsLabel = 'Settings',
   });
 
   final SplitTab activeTab;
   final ValueChanged<SplitTab> onChanged;
+  final String billsLabel;
+  final String settingsLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -690,13 +703,13 @@ class SplitFloatingNav extends StatelessWidget {
             children: [
               _NavItem(
                 icon: Icons.receipt_long_rounded,
-                label: 'Bills',
+                label: billsLabel,
                 selected: activeTab == SplitTab.home,
                 onTap: () => onChanged(SplitTab.home),
               ),
               _NavItem(
                 icon: Icons.tune_rounded,
-                label: 'Settings',
+                label: settingsLabel,
                 selected: activeTab == SplitTab.settings,
                 onTap: () => onChanged(SplitTab.settings),
               ),

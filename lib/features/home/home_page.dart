@@ -17,6 +17,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.splitColors;
+    final strings = controller.strings;
     final history = controller.state.history;
     final savedTotal = history.fold<int>(0, (sum, bill) => sum + bill.grandTotal);
     return SplitScreen(
@@ -27,10 +28,10 @@ class HomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Split Bill', style: Theme.of(context).textTheme.headlineMedium),
+                  Text(strings.appTitle, style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: SplitSpacing.xs),
                   Text(
-                    'Bagi tagihan makan, trip, atau patungan kecil tanpa cloud.',
+                    strings.homeIntro,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -52,22 +53,22 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Split a new bill', style: Theme.of(context).textTheme.titleLarge),
+              Text(strings.newBill, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: SplitSpacing.sm),
               Text(
-                'Tambah peserta, assign item, hitung pajak dan diskon, lalu simpan riwayat lokal.',
+                strings.newBillIntro,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: SplitSpacing.lg),
               SplitPrimaryButton(
-                label: 'New Bill',
+                label: strings.newBill,
                 icon: Icons.add_rounded,
                 expand: true,
                 onPressed: () => _startBill(context, SplitMode.items),
               ),
               const SizedBox(height: SplitSpacing.sm),
               SplitSecondaryButton(
-                label: 'Equal Split',
+                label: strings.equalSplit,
                 icon: Icons.balance_rounded,
                 expand: true,
                 onPressed: () => _startBill(context, SplitMode.equal),
@@ -80,6 +81,8 @@ class HomePage extends StatelessWidget {
             Expanded(
               child: _QuickActionCard(
                 mode: SplitMode.equal,
+                title: strings.modeLabel(SplitMode.equal),
+                description: strings.modeDescription(SplitMode.equal),
                 onTap: () => _startBill(context, SplitMode.equal),
               ),
             ),
@@ -87,6 +90,8 @@ class HomePage extends StatelessWidget {
             Expanded(
               child: _QuickActionCard(
                 mode: SplitMode.custom,
+                title: strings.modeLabel(SplitMode.custom),
+                description: strings.modeDescription(SplitMode.custom),
                 onTap: () => _startBill(context, SplitMode.custom),
               ),
             ),
@@ -97,7 +102,7 @@ class HomePage extends StatelessWidget {
             children: [
               Expanded(
                 child: _MetricTile(
-                  label: 'Riwayat',
+                  label: strings.recentBills,
                   value: '${history.length}',
                   icon: Icons.receipt_long_rounded,
                 ),
@@ -105,7 +110,7 @@ class HomePage extends StatelessWidget {
               const SizedBox(width: SplitSpacing.md),
               Expanded(
                 child: _MetricTile(
-                  label: 'Total tersimpan',
+                  label: strings.totalSaved,
                   value: formatRupiah(savedTotal),
                   icon: Icons.payments_rounded,
                 ),
@@ -120,10 +125,10 @@ class HomePage extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text('Recent Bills', style: Theme.of(context).textTheme.titleLarge),
+                    child: Text(strings.recentBills, style: Theme.of(context).textTheme.titleLarge),
                   ),
                   Text(
-                    '${history.length} saved',
+                    strings.savedCount(history.length),
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           color: colors.textMuted,
                         ),
@@ -136,10 +141,10 @@ class HomePage extends StatelessWidget {
               else if (history.isEmpty)
                 SplitEmptyState(
                   icon: Icons.receipt_long_outlined,
-                  title: 'No saved bills yet',
-                  message: 'Mulai dari split per item atau split rata.',
+                  title: strings.noBillsTitle,
+                  message: strings.noBillsMessage,
                   action: SplitSecondaryButton(
-                    label: 'Equal Split',
+                    label: strings.equalSplit,
                     icon: Icons.balance_rounded,
                     onPressed: () => _startBill(context, SplitMode.equal),
                   ),
@@ -150,6 +155,8 @@ class HomePage extends StatelessWidget {
                     for (final bill in history) ...[
                       _HistoryCard(
                         bill: bill,
+                        modeLabel: strings.modeLabel(bill.mode),
+                        participantLabel: strings.participantCount(bill.participantCount),
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -185,10 +192,14 @@ class HomePage extends StatelessWidget {
 class _QuickActionCard extends StatelessWidget {
   const _QuickActionCard({
     required this.mode,
+    required this.title,
+    required this.description,
     required this.onTap,
   });
 
   final SplitMode mode;
+  final String title;
+  final String description;
   final VoidCallback onTap;
 
   @override
@@ -211,14 +222,14 @@ class _QuickActionCard extends StatelessWidget {
           ),
           const SizedBox(height: SplitSpacing.md),
           Text(
-            splitModeLabel(mode),
+            title,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: SplitSpacing.xs),
           Text(
-            mode == SplitMode.equal ? 'Cepat untuk semua rata.' : 'Jumlah per orang manual.',
+            description,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyMedium,
@@ -269,10 +280,14 @@ class _MetricTile extends StatelessWidget {
 class _HistoryCard extends StatelessWidget {
   const _HistoryCard({
     required this.bill,
+    required this.modeLabel,
+    required this.participantLabel,
     required this.onTap,
   });
 
   final SavedBillSummary bill;
+  final String modeLabel;
+  final String participantLabel;
   final VoidCallback onTap;
 
   @override
@@ -310,7 +325,7 @@ class _HistoryCard extends StatelessWidget {
                     ),
                     const SizedBox(height: SplitSpacing.xs),
                     Text(
-                      '${splitModeLabel(bill.mode)} • ${bill.participantCount} people',
+                      '$modeLabel - $participantLabel',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: Theme.of(context).textTheme.bodyMedium,
