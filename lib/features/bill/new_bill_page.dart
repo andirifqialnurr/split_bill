@@ -104,7 +104,8 @@ class _NewBillPageState extends State<NewBillPage> {
     final id = await widget.controller.saveCurrentBill();
     if (!context.mounted) return;
     if (id == null) {
-      final message = widget.controller.state.errorMessage ?? 'Could not save bill.';
+      final rawMessage = widget.controller.state.errorMessage ?? widget.controller.strings.saveFailed;
+      final message = widget.controller.strings.validationMessage(rawMessage);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       return;
     }
@@ -995,12 +996,15 @@ class _ResultStep extends StatelessWidget {
       final strings = controller.strings;
       return ResultView(
         calculation: calculation,
+        strings: strings,
         title: draft?.title,
         occurredAt: draft?.occurredAt,
         mode: draft?.mode,
+        saveLabel: strings.saveBill,
         onCopy: () async {
           await copyBillSummary(
             calculation,
+            strings: strings,
             title: draft?.title,
             occurredAt: draft?.occurredAt,
           );
@@ -1012,7 +1016,7 @@ class _ResultStep extends StatelessWidget {
         onSave: onSave,
       );
     } on BillValidationException catch (error) {
-      return SplitWarningBanner(message: error.message, isError: true);
+      return SplitWarningBanner(message: controller.strings.validationMessage(error.message), isError: true);
     }
   }
 }
@@ -1090,7 +1094,7 @@ String _stepLabel(BillStep step, SplitMode mode, SplitStrings strings) {
     BillStep.people => strings.people,
     BillStep.items => strings.items,
     BillStep.charges => mode == SplitMode.custom ? strings.custom : strings.charges,
-    BillStep.result => isEnglishResult(strings),
+    BillStep.result => strings.result,
   };
 }
 
@@ -1122,5 +1126,3 @@ String _advanceHelper(BillStep step, DraftBill draft, SplitStrings strings) {
     BillStep.result => '',
   };
 }
-
-String isEnglishResult(SplitStrings strings) => strings.isEnglish ? 'Result' : 'Hasil';

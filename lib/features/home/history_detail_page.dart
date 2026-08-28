@@ -17,6 +17,7 @@ class HistoryDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final strings = controller.strings;
     return Scaffold(
       body: FutureBuilder(
         future: controller.getBillDetail(billId),
@@ -29,9 +30,9 @@ class HistoryDetailPage extends StatelessWidget {
             return SplitScreen(
               padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
               children: [
-                const _Header(title: 'Bill not found'),
-                const SplitWarningBanner(
-                  message: 'This saved bill is no longer available.',
+                _Header(title: strings.billNotFound, backLabel: strings.back),
+                SplitWarningBanner(
+                  message: strings.billNotFoundMessage,
                   isError: true,
                 ),
               ],
@@ -40,9 +41,13 @@ class HistoryDetailPage extends StatelessWidget {
           return SplitScreen(
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
             children: [
-              _Header(title: detail.bill.title.trim().isEmpty ? 'Saved Bill' : detail.bill.title),
+              _Header(
+                title: detail.bill.title.trim().isEmpty ? strings.savedBill : detail.bill.title,
+                backLabel: strings.back,
+              ),
               ResultView(
                 calculation: detail.calculation,
+                strings: strings,
                 title: detail.bill.title,
                 occurredAt: detail.bill.occurredAt,
                 mode: detail.bill.mode,
@@ -56,16 +61,20 @@ class HistoryDetailPage extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.title});
+  const _Header({
+    required this.title,
+    required this.backLabel,
+  });
 
   final String title;
+  final String backLabel;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         SplitIconButton(
-          tooltip: 'Back',
+          tooltip: backLabel,
           icon: Icons.arrow_back_rounded,
           onPressed: () => Navigator.of(context).pop(),
         ),

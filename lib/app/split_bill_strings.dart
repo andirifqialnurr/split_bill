@@ -38,6 +38,7 @@ class SplitStrings {
   String get next => isEnglish ? 'Next' : 'Lanjut';
   String get save => isEnglish ? 'Save' : 'Simpan';
   String get saveBill => isEnglish ? 'Save Bill' : 'Simpan Bill';
+  String get copySummary => isEnglish ? 'Copy Summary' : 'Salin Ringkasan';
   String get cancel => isEnglish ? 'Cancel' : 'Batal';
   String get remove => isEnglish ? 'Remove' : 'Hapus';
   String get editParticipant => isEnglish ? 'Edit participant' : 'Edit peserta';
@@ -83,6 +84,7 @@ class SplitStrings {
   String get percent => isEnglish ? 'Percent' : 'Persen';
   String get summaryCopied => isEnglish ? 'Summary copied.' : 'Ringkasan disalin.';
   String get billSaved => isEnglish ? 'Bill saved.' : 'Bill tersimpan.';
+  String get saveFailed => isEnglish ? 'Could not save bill.' : 'Bill gagal disimpan.';
   String get discardTitle => isEnglish ? 'Discard bill?' : 'Buang bill?';
   String get discardMessage => isEnglish ? 'Unsaved data will be removed.' : 'Data belum tersimpan akan hilang.';
   String get discard => isEnglish ? 'Discard' : 'Buang';
@@ -92,6 +94,20 @@ class SplitStrings {
   String get helperNeedItems => isEnglish ? 'Add at least one item.' : 'Tambahkan minimal satu item.';
   String get helperNeedTotal => isEnglish ? 'Enter the bill total.' : 'Masukkan total tagihan.';
   String get helperNeedCustom => isEnglish ? 'Set remaining to zero.' : 'Selesaikan sisa ke Rp0.';
+  String get result => isEnglish ? 'Result' : 'Hasil';
+  String get splitBillSummary => isEnglish ? 'Split Bill Summary' : 'Ringkasan Split Bill';
+  String get perPerson => isEnglish ? 'Per person' : 'Per peserta';
+  String get due => isEnglish ? 'Due' : 'Bayar';
+  String get baseItems => isEnglish ? 'Base items' : 'Item dasar';
+  String get taxAndService => isEnglish ? 'Tax and service' : 'Pajak dan layanan';
+  String get rounding => isEnglish ? 'Rounding' : 'Pembulatan';
+  String totalParticipants(int count) => isEnglish ? 'People: $count' : 'Peserta: $count';
+  String get roundingNote => isEnglish
+      ? 'Rounding keeps the total exact.'
+      : 'Pembulatan menjaga total tetap pas.';
+  String get billNotFound => isEnglish ? 'Bill not found' : 'Bill tidak ditemukan';
+  String get billNotFoundMessage => isEnglish ? 'This bill is unavailable.' : 'Bill ini tidak tersedia.';
+  String get savedBill => isEnglish ? 'Saved Bill' : 'Bill Tersimpan';
 
   String modeLabel(SplitMode mode) {
     return switch (mode) {
@@ -107,5 +123,28 @@ class SplitStrings {
       SplitMode.items => isEnglish ? 'Assign items to people.' : 'Tetapkan item ke peserta.',
       SplitMode.custom => isEnglish ? 'Set each amount manually.' : 'Isi jumlah tiap peserta.',
     };
+  }
+
+  String validationMessage(String message) {
+    if (isEnglish) return message;
+    if (message == 'Could not save bill.') return saveFailed;
+    if (message == 'Could not load saved bills.') return 'Riwayat gagal dimuat.';
+    if (message == 'Create a bill first.') return 'Buat bill dulu.';
+    if (message == 'Add at least one participant.') return 'Tambahkan minimal satu peserta.';
+    if (message == 'Enter the bill total.') return helperNeedTotal;
+    if (message == 'Add at least one item.') return helperNeedItems;
+    if (message == 'Custom amount cannot be negative.') return 'Jumlah custom tidak boleh negatif.';
+    if (message == 'Custom split remaining must be zero.') return helperNeedCustom;
+    if (message == 'Bill total invariant failed.') return 'Total bill tidak valid.';
+    if (message.startsWith('Enter price for ')) {
+      final name = message.substring('Enter price for '.length).replaceAll('.', '');
+      return 'Isi harga untuk $name.';
+    }
+    if (message.startsWith('Assign ') && message.endsWith(' to at least one person.')) {
+      final name = message
+          .substring('Assign '.length, message.length - ' to at least one person.'.length);
+      return 'Pilih peserta untuk $name.';
+    }
+    return message;
   }
 }

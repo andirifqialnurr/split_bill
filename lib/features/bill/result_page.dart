@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+import '../../app/split_bill_strings.dart';
 import '../../core/money.dart';
 import '../../domain/split_bill_models.dart';
 import '../../ui/split_components.dart';
@@ -11,21 +12,23 @@ class ResultView extends StatelessWidget {
   const ResultView({
     super.key,
     required this.calculation,
+    required this.strings,
     this.title,
     this.occurredAt,
     this.mode,
     this.onCopy,
     this.onSave,
-    this.saveLabel = 'Save Bill',
+    this.saveLabel,
   });
 
   final BillCalculation calculation;
+  final SplitStrings strings;
   final String? title;
   final DateTime? occurredAt;
   final SplitMode? mode;
   final VoidCallback? onCopy;
   final VoidCallback? onSave;
-  final String saveLabel;
+  final String? saveLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +38,16 @@ class ResultView extends StatelessWidget {
       children: [
         _GrandTotalCard(
           calculation: calculation,
+          strings: strings,
           title: title,
           occurredAt: occurredAt,
           mode: mode,
         ),
         const SizedBox(height: SplitSpacing.lg),
-        Text('Per person', style: Theme.of(context).textTheme.titleLarge),
+        Text(strings.perPerson, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: SplitSpacing.md),
         for (final result in calculation.results) ...[
-          _PersonResultCard(result: result),
+          _PersonResultCard(result: result, strings: strings),
           if (result != calculation.results.last) const SizedBox(height: SplitSpacing.sm),
         ],
         if (onCopy != null || onSave != null) ...[
@@ -53,7 +57,7 @@ class ResultView extends StatelessWidget {
               if (onCopy != null)
                 Expanded(
                   child: SplitSecondaryButton(
-                    label: 'Copy Summary',
+                    label: strings.copySummary,
                     icon: Icons.content_copy_rounded,
                     onPressed: onCopy,
                   ),
@@ -62,7 +66,7 @@ class ResultView extends StatelessWidget {
               if (onSave != null)
                 Expanded(
                   child: SplitPrimaryButton(
-                    label: saveLabel,
+                    label: saveLabel ?? strings.saveBill,
                     icon: Icons.save_rounded,
                     onPressed: onSave,
                   ),
@@ -72,7 +76,7 @@ class ResultView extends StatelessWidget {
         ],
         const SizedBox(height: SplitSpacing.xs),
         Text(
-          'Total peserta: ${calculation.results.length}',
+          strings.totalParticipants(calculation.results.length),
           style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.textMuted),
         ),
       ],
@@ -83,12 +87,14 @@ class ResultView extends StatelessWidget {
 class _GrandTotalCard extends StatelessWidget {
   const _GrandTotalCard({
     required this.calculation,
+    required this.strings,
     required this.title,
     required this.occurredAt,
     required this.mode,
   });
 
   final BillCalculation calculation;
+  final SplitStrings strings;
   final String? title;
   final DateTime? occurredAt;
   final SplitMode? mode;
@@ -96,7 +102,7 @@ class _GrandTotalCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.splitColors;
-    final note = _roundingNote(calculation.results);
+    final note = _roundingNote(calculation.results, strings);
     return SplitCard(
       backgroundColor: colors.primarySoft.withValues(alpha: 0.52),
       child: Column(
@@ -132,7 +138,7 @@ class _GrandTotalCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: SplitSpacing.lg),
-          Text('Grand Total', style: Theme.of(context).textTheme.bodyMedium),
+          Text(strings.grandTotal, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: SplitSpacing.xs),
           FittedBox(
             fit: BoxFit.scaleDown,
@@ -140,14 +146,14 @@ class _GrandTotalCard extends StatelessWidget {
             child: SplitMoneyText(calculation.grandTotal, size: 32),
           ),
           const SizedBox(height: SplitSpacing.lg),
-          SplitSummaryRow(label: 'Subtotal', value: formatRupiah(calculation.subtotal)),
+          SplitSummaryRow(label: strings.subtotal, value: formatRupiah(calculation.subtotal)),
           if (calculation.taxAmount != 0)
-            SplitSummaryRow(label: 'Tax', value: '+ ${formatRupiah(calculation.taxAmount)}'),
+            SplitSummaryRow(label: strings.tax, value: '+ ${formatRupiah(calculation.taxAmount)}'),
           if (calculation.serviceAmount != 0)
-            SplitSummaryRow(label: 'Service', value: '+ ${formatRupiah(calculation.serviceAmount)}'),
+            SplitSummaryRow(label: strings.service, value: '+ ${formatRupiah(calculation.serviceAmount)}'),
           if (calculation.discountAmount != 0)
             SplitSummaryRow(
-              label: 'Discount',
+              label: strings.discount,
               value: '- ${formatRupiah(calculation.discountAmount)}',
               valueColor: colors.success,
             ),
@@ -162,9 +168,13 @@ class _GrandTotalCard extends StatelessWidget {
 }
 
 class _PersonResultCard extends StatelessWidget {
-  const _PersonResultCard({required this.result});
+  const _PersonResultCard({
+    required this.result,
+    required this.strings,
+  });
 
   final SettlementResult result;
+  final SplitStrings strings;
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +204,7 @@ class _PersonResultCard extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           subtitle: Text(
-            'Due ${formatRupiah(result.amountDue)}',
+            '${strings.due} ${formatRupiah(result.amountDue)}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -207,18 +217,18 @@ class _PersonResultCard extends StatelessWidget {
             ],
           ),
           children: [
-            SplitSummaryRow(label: 'Base items', value: formatRupiah(result.baseAmount)),
-            SplitSummaryRow(label: 'Tax and service', value: formatRupiah(result.chargesAmount)),
+            SplitSummaryRow(label: strings.baseItems, value: formatRupiah(result.baseAmount)),
+            SplitSummaryRow(label: strings.taxAndService, value: formatRupiah(result.chargesAmount)),
             SplitSummaryRow(
-              label: 'Discount',
+              label: strings.discount,
               value: '- ${formatRupiah(result.discountAmount)}',
               valueColor: colors.success,
             ),
             if (result.roundingAmount != 0)
-              SplitSummaryRow(label: 'Rounding', value: formatRupiah(result.roundingAmount)),
+              SplitSummaryRow(label: strings.rounding, value: formatRupiah(result.roundingAmount)),
             if (result.items.isNotEmpty) ...[
               const SizedBox(height: SplitSpacing.md),
-              const SplitSectionLabel('Items'),
+              SplitSectionLabel(strings.items),
               const SizedBox(height: SplitSpacing.xs),
               for (final item in result.items)
                 SplitSummaryRow(label: item.itemName, value: formatRupiah(item.amount)),
@@ -232,22 +242,23 @@ class _PersonResultCard extends StatelessWidget {
 
 Future<void> copyBillSummary(
   BillCalculation calculation, {
+  required SplitStrings strings,
   String? title,
   DateTime? occurredAt,
 }) async {
   final buffer = StringBuffer()
-    ..writeln(title == null || title.trim().isEmpty ? 'Split Bill Summary' : title.trim());
+    ..writeln(title == null || title.trim().isEmpty ? strings.splitBillSummary : title.trim());
   if (occurredAt != null) {
     buffer.writeln(DateFormat('d MMM y', 'id_ID').format(occurredAt));
   }
-  buffer.writeln('Grand total: ${formatRupiah(calculation.grandTotal)}');
+  buffer.writeln('${strings.grandTotal}: ${formatRupiah(calculation.grandTotal)}');
   for (final result in calculation.results) {
     buffer.writeln('${result.participant.name}: ${formatRupiah(result.amountDue)}');
   }
   await Clipboard.setData(ClipboardData(text: buffer.toString().trim()));
 }
 
-String? _roundingNote(List<SettlementResult> results) {
+String? _roundingNote(List<SettlementResult> results, SplitStrings strings) {
   if (results.every((result) => result.roundingAmount == 0)) return null;
-  return 'Ada penyesuaian pembulatan supaya jumlah per peserta tetap sama dengan grand total.';
+  return strings.roundingNote;
 }

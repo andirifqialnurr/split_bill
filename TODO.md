@@ -100,16 +100,16 @@ Commit plan:
 
 Checklist:
 
-- [ ] Lokalkan teks Home.
-- [ ] Lokalkan teks bottom navigation.
-- [ ] Lokalkan teks Settings.
-- [ ] Lokalkan teks New Bill detail, people, items, charges, custom, dan result step.
-- [ ] Lokalkan teks Result dan History Detail.
-- [ ] Lokalkan snackbar, dialog, empty state, warning, dan validation error.
-- [ ] Pendekkan copy yang panjang menjadi satu kalimat pendek.
-- [ ] Pastikan label tombol tetap jelas.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint copy localization.
+- [x] Lokalkan teks Home.
+- [x] Lokalkan teks bottom navigation.
+- [x] Lokalkan teks Settings.
+- [x] Lokalkan teks New Bill detail, people, items, charges, custom, dan result step.
+- [x] Lokalkan teks Result dan History Detail.
+- [x] Lokalkan snackbar, dialog, empty state, warning, dan validation error.
+- [x] Pendekkan copy yang panjang menjadi satu kalimat pendek.
+- [x] Pastikan label tombol tetap jelas.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint copy localization.
 
 ## 9. Language Acceptance
 
