@@ -7,9 +7,12 @@ enum SplitTab { home, settings }
 
 enum BillStep { detail, people, items, charges, result }
 
+enum AppLanguage { id, en }
+
 class SplitBillState {
   const SplitBillState({
     this.themeMode = ThemeMode.system,
+    this.language = AppLanguage.id,
     this.activeTab = SplitTab.home,
     this.history = const [],
     this.isLoading = false,
@@ -19,6 +22,7 @@ class SplitBillState {
   });
 
   final ThemeMode themeMode;
+  final AppLanguage language;
   final SplitTab activeTab;
   final List<SavedBillSummary> history;
   final bool isLoading;
@@ -28,6 +32,7 @@ class SplitBillState {
 
   SplitBillState copyWith({
     ThemeMode? themeMode,
+    AppLanguage? language,
     SplitTab? activeTab,
     List<SavedBillSummary>? history,
     bool? isLoading,
@@ -39,6 +44,7 @@ class SplitBillState {
   }) {
     return SplitBillState(
       themeMode: themeMode ?? this.themeMode,
+      language: language ?? this.language,
       activeTab: activeTab ?? this.activeTab,
       history: history ?? this.history,
       isLoading: isLoading ?? this.isLoading,

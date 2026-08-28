@@ -5,6 +5,7 @@ import '../data/split_bill_database.dart';
 import '../data/split_bill_repository.dart';
 import '../domain/split_bill_calculator.dart';
 import '../domain/split_bill_models.dart';
+import 'split_bill_strings.dart';
 import 'split_bill_state.dart';
 
 class SplitBillController extends ChangeNotifier {
@@ -21,6 +22,8 @@ class SplitBillController extends ChangeNotifier {
   SplitBillState _state = const SplitBillState();
 
   SplitBillState get state => _state;
+
+  SplitStrings get strings => SplitStrings(_state.language);
 
   BillCalculation? get currentCalculation {
     final draft = _state.draft;
@@ -80,6 +83,12 @@ class SplitBillController extends ChangeNotifier {
   void setThemeMode(ThemeMode mode) {
     if (_state.themeMode == mode) return;
     _state = _state.copyWith(themeMode: mode);
+    notifyListeners();
+  }
+
+  void setLanguage(AppLanguage language) {
+    if (_state.language == language) return;
+    _state = _state.copyWith(language: language);
     notifyListeners();
   }
 
