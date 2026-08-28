@@ -61,14 +61,14 @@ Commit plan:
 
 Checklist:
 
-- [ ] Tambahkan enum `AppLanguage` dengan nilai `id` dan `en`.
-- [ ] Simpan pilihan bahasa di app state.
-- [ ] Tambahkan controller action untuk mengganti bahasa.
-- [ ] Buat helper teks lokal, misalnya `SplitStrings`.
-- [ ] Pastikan default bahasa tetap Indonesia.
-- [ ] Tambahkan test untuk render Indonesia dan English.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint language foundation.
+- [x] Tambahkan enum `AppLanguage` dengan nilai `id` dan `en`.
+- [x] Simpan pilihan bahasa di app state.
+- [x] Tambahkan controller action untuk mengganti bahasa.
+- [x] Buat helper teks lokal, misalnya `SplitStrings`.
+- [x] Pastikan default bahasa tetap Indonesia.
+- [x] Tambahkan test untuk render Indonesia dan English.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint language foundation.
 
 ## 7. Settings Language Selector
 
