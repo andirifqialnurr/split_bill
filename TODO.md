@@ -49,3 +49,83 @@ Aturan kerja:
 - [x] Pastikan long item name, 8+ participants, light/dark, dan width kecil punya guard layout.
 - [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`, dan `flutter build apk --debug` bila Android SDK tersedia.
 - [x] Commit dan push final state.
+
+## 6. Language Foundation
+
+Target: aplikasi mendukung Bahasa Indonesia dan English tanpa package i18n baru dulu.
+
+Commit plan:
+
+- Commit 1: model bahasa, state, controller, dan kamus teks dasar.
+- Commit 2: test smoke untuk pergantian bahasa.
+
+Checklist:
+
+- [ ] Tambahkan enum `AppLanguage` dengan nilai `id` dan `en`.
+- [ ] Simpan pilihan bahasa di app state.
+- [ ] Tambahkan controller action untuk mengganti bahasa.
+- [ ] Buat helper teks lokal, misalnya `SplitStrings`.
+- [ ] Pastikan default bahasa tetap Indonesia.
+- [ ] Tambahkan test untuk render Indonesia dan English.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint language foundation.
+
+## 7. Settings Language Selector
+
+Target: pilihan bahasa disimpan di halaman Settings.
+
+Commit plan:
+
+- Commit 1: UI selector bahasa di Settings.
+- Commit 2: sinkronisasi copy Settings agar ringkas.
+
+Checklist:
+
+- [ ] Tambahkan section `Language` di Settings.
+- [ ] Tambahkan segmented control `Indonesia` / `English`.
+- [ ] Pastikan pilihan langsung mengubah teks aplikasi.
+- [ ] Ringkas deskripsi Settings yang terlalu panjang.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint settings language.
+
+## 8. UI Copy Localization And Cleanup
+
+Target: semua teks utama tersedia dalam dua bahasa dan deskripsi dibuat lebih pendek.
+
+Commit plan:
+
+- Commit 1: Home, navigation, Settings.
+- Commit 2: New Bill wizard.
+- Commit 3: Result, History, snackbar, dialog, dan error.
+
+Checklist:
+
+- [ ] Lokalkan teks Home.
+- [ ] Lokalkan teks bottom navigation.
+- [ ] Lokalkan teks Settings.
+- [ ] Lokalkan teks New Bill detail, people, items, charges, custom, dan result step.
+- [ ] Lokalkan teks Result dan History Detail.
+- [ ] Lokalkan snackbar, dialog, empty state, warning, dan validation error.
+- [ ] Pendekkan copy yang panjang menjadi satu kalimat pendek.
+- [ ] Pastikan label tombol tetap jelas.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint copy localization.
+
+## 9. Language Acceptance
+
+Target: fitur bahasa selesai dan tidak mengganggu split bill flow.
+
+Commit plan:
+
+- Commit 1: final validation dan checklist.
+
+Checklist:
+
+- [ ] Uji manual flow Indonesia: Home -> New Bill -> Result.
+- [ ] Uji manual flow English: Home -> New Bill -> Result.
+- [ ] Pastikan Settings tetap bisa mengganti theme dan language.
+- [ ] Pastikan Copy Summary mengikuti bahasa aktif.
+- [ ] Jalankan `flutter analyze`.
+- [ ] Jalankan `flutter test --concurrency=1`.
+- [ ] Jalankan `flutter build apk --debug` bila Android SDK tersedia.
+- [ ] Commit dan push final language state.
