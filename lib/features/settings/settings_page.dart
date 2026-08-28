@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/split_bill_controller.dart';
+import '../../app/split_bill_state.dart';
 import '../../ui/split_components.dart';
 import '../../ui/split_tokens.dart';
 
@@ -13,6 +14,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = controller.state;
     final colors = context.splitColors;
+    final strings = controller.strings;
     return SplitScreen(
       children: [
         Row(
@@ -21,10 +23,10 @@ class SettingsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Settings', style: Theme.of(context).textTheme.headlineMedium),
+                  Text(strings.settings, style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: SplitSpacing.xs),
                   Text(
-                    'Preferensi lokal untuk tampilan Split Bill.',
+                    strings.localOnly,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -45,35 +47,65 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Theme', style: Theme.of(context).textTheme.titleLarge),
+              Text(strings.theme, style: Theme.of(context).textTheme.titleLarge),
               const SizedBox(height: SplitSpacing.xs),
               Text(
-                'Pilih mode yang nyaman untuk dipakai saat membagi tagihan.',
+                strings.chooseTheme,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: SplitSpacing.lg),
               SegmentedButton<ThemeMode>(
                 showSelectedIcon: false,
-                segments: const [
+                segments: [
                   ButtonSegment(
                     value: ThemeMode.system,
-                    label: Text('System'),
-                    icon: Icon(Icons.brightness_auto_rounded),
+                    label: Text(strings.system),
+                    icon: const Icon(Icons.brightness_auto_rounded),
                   ),
                   ButtonSegment(
                     value: ThemeMode.light,
-                    label: Text('Light'),
-                    icon: Icon(Icons.light_mode_rounded),
+                    label: Text(strings.light),
+                    icon: const Icon(Icons.light_mode_rounded),
                   ),
                   ButtonSegment(
                     value: ThemeMode.dark,
-                    label: Text('Dark'),
-                    icon: Icon(Icons.dark_mode_rounded),
+                    label: Text(strings.dark),
+                    icon: const Icon(Icons.dark_mode_rounded),
                   ),
                 ],
                 selected: {state.themeMode},
                 onSelectionChanged: (value) {
                   controller.setThemeMode(value.first);
+                },
+              ),
+            ],
+          ),
+        ),
+        SplitCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(strings.languageLabel, style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: SplitSpacing.xs),
+              Text(strings.chooseLanguage, style: Theme.of(context).textTheme.bodyMedium),
+              const SizedBox(height: SplitSpacing.lg),
+              SegmentedButton<AppLanguage>(
+                showSelectedIcon: false,
+                segments: [
+                  ButtonSegment(
+                    value: AppLanguage.id,
+                    label: Text(strings.indonesia),
+                    icon: const Icon(Icons.translate_rounded),
+                  ),
+                  ButtonSegment(
+                    value: AppLanguage.en,
+                    label: Text(strings.english),
+                    icon: const Icon(Icons.language_rounded),
+                  ),
+                ],
+                selected: {state.language},
+                onSelectionChanged: (value) {
+                  controller.setLanguage(value.first);
                 },
               ),
             ],
@@ -87,7 +119,7 @@ class SettingsPage extends StatelessWidget {
               const SizedBox(width: SplitSpacing.md),
               Expanded(
                 child: Text(
-                  'Semua bill tersimpan di SQLite lokal perangkat.',
+                  strings.localOnly,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),

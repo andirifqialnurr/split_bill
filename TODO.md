@@ -81,12 +81,12 @@ Commit plan:
 
 Checklist:
 
-- [ ] Tambahkan section `Language` di Settings.
-- [ ] Tambahkan segmented control `Indonesia` / `English`.
-- [ ] Pastikan pilihan langsung mengubah teks aplikasi.
-- [ ] Ringkas deskripsi Settings yang terlalu panjang.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint settings language.
+- [x] Tambahkan section `Language` di Settings.
+- [x] Tambahkan segmented control `Indonesia` / `English`.
+- [x] Pastikan pilihan langsung mengubah teks aplikasi.
+- [x] Ringkas deskripsi Settings yang terlalu panjang.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint settings language.
 
 ## 8. UI Copy Localization And Cleanup
 
