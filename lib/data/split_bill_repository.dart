@@ -148,6 +148,7 @@ ORDER BY b.occurred_at DESC, b.created_at DESC
           'discount_amount': result.discountAmount,
           'rounding_amount': result.roundingAmount,
           'amount_due': result.amountDue,
+          'is_paid': result.isPaid ? 1 : 0,
         });
       }
 
@@ -158,6 +159,21 @@ ORDER BY b.occurred_at DESC, b.created_at DESC
   Future<bool> deleteBill(int id) async {
     final db = await database.instance;
     final count = await db.delete('bills', where: 'id = ?', whereArgs: [id]);
+    return count > 0;
+  }
+
+  Future<bool> updateParticipantPaidStatus({
+    required int billId,
+    required int participantId,
+    required bool isPaid,
+  }) async {
+    final db = await database.instance;
+    final count = await db.update(
+      'settlement_results',
+      {'is_paid': isPaid ? 1 : 0},
+      where: 'bill_id = ? AND participant_id = ?',
+      whereArgs: [billId, participantId],
+    );
     return count > 0;
   }
 
@@ -242,6 +258,7 @@ WHERE bi.bill_id = ?
         roundingAmount: row['rounding_amount'] as int,
         amountDue: row['amount_due'] as int,
         items: itemShares[participantId] ?? const [],
+        isPaid: (row['is_paid'] as int? ?? 0) == 1,
       );
     }).whereType<SettlementResult>().toList(growable: false);
 

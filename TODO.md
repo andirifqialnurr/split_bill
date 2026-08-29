@@ -177,13 +177,13 @@ Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatn
 
 ### 9.6 Paid Checklist
 
-- [ ] Tambahkan status lokal sudah bayar/belum bayar per peserta pada saved bill.
-- [ ] Tentukan schema/migration SQLite yang tidak merusak snapshot lama.
-- [ ] Tampilkan checklist di Result setelah save atau di History Detail.
-- [ ] Pastikan checklist tidak mengubah hasil kalkulasi.
-- [ ] Tambahkan test persistence/checklist bila environment mendukung.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint paid checklist.
+- [x] Tambahkan status lokal sudah bayar/belum bayar per peserta pada saved bill.
+- [x] Tentukan schema/migration SQLite yang tidak merusak snapshot lama.
+- [x] Tampilkan checklist di Result setelah save atau di History Detail.
+- [x] Pastikan checklist tidak mengubah hasil kalkulasi.
+- [x] Tambahkan test persistence/checklist bila environment mendukung.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint paid checklist.
 
 ## 10. Final Validation Checklist
 

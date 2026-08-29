@@ -19,6 +19,7 @@ class ResultView extends StatelessWidget {
     this.onCopy,
     this.onShare,
     this.onSave,
+    this.onPaidChanged,
     this.saveLabel,
   });
 
@@ -30,6 +31,7 @@ class ResultView extends StatelessWidget {
   final VoidCallback? onCopy;
   final VoidCallback? onShare;
   final VoidCallback? onSave;
+  final Future<void> Function(SettlementResult result, bool isPaid)? onPaidChanged;
   final String? saveLabel;
 
   @override
@@ -49,7 +51,11 @@ class ResultView extends StatelessWidget {
         Text(strings.perPerson, style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: SplitSpacing.md),
         for (final result in calculation.results) ...[
-          _PersonResultCard(result: result, strings: strings),
+          _PersonResultCard(
+            result: result,
+            strings: strings,
+            onPaidChanged: onPaidChanged,
+          ),
           if (result != calculation.results.last) const SizedBox(height: SplitSpacing.sm),
         ],
         if (onCopy != null || onShare != null || onSave != null) ...[
@@ -183,10 +189,12 @@ class _PersonResultCard extends StatelessWidget {
   const _PersonResultCard({
     required this.result,
     required this.strings,
+    required this.onPaidChanged,
   });
 
   final SettlementResult result;
   final SplitStrings strings;
+  final Future<void> Function(SettlementResult result, bool isPaid)? onPaidChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +224,9 @@ class _PersonResultCard extends StatelessWidget {
             style: Theme.of(context).textTheme.titleMedium,
           ),
           subtitle: Text(
-            '${strings.due} ${formatRupiah(result.amountDue)}',
+            onPaidChanged == null
+                ? '${strings.due} ${formatRupiah(result.amountDue)}'
+                : '${strings.due} ${formatRupiah(result.amountDue)} - ${result.isPaid ? strings.paid : strings.unpaid}',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -229,6 +239,18 @@ class _PersonResultCard extends StatelessWidget {
             ],
           ),
           children: [
+            if (onPaidChanged != null) ...[
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: result.isPaid,
+                onChanged: (value) {
+                  onPaidChanged!(result, value ?? false);
+                },
+                title: Text(strings.paidStatus),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+              const SizedBox(height: SplitSpacing.sm),
+            ],
             SplitSummaryRow(label: strings.baseItems, value: formatRupiah(result.baseAmount)),
             SplitSummaryRow(label: strings.taxAndService, value: formatRupiah(result.chargesAmount)),
             SplitSummaryRow(

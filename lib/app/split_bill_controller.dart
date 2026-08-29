@@ -141,6 +141,29 @@ class SplitBillController extends ChangeNotifier {
     }
   }
 
+  Future<bool> setParticipantPaidStatus({
+    required int billId,
+    required String participantId,
+    required bool isPaid,
+  }) async {
+    final parsedParticipantId = int.tryParse(participantId);
+    if (parsedParticipantId == null) return false;
+    try {
+      final updated = await _repository.updateParticipantPaidStatus(
+        billId: billId,
+        participantId: parsedParticipantId,
+        isPaid: isPaid,
+      );
+      if (!updated) return false;
+      notifyListeners();
+      return true;
+    } catch (_) {
+      _state = _state.copyWith(errorMessage: 'Could not update paid status.');
+      notifyListeners();
+      return false;
+    }
+  }
+
   void setTab(SplitTab tab) {
     if (_state.activeTab == tab) return;
     _state = _state.copyWith(activeTab: tab);

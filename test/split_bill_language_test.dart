@@ -27,6 +27,7 @@ void main() {
     expect(strings.deleteBill, 'Hapus bill');
     expect(strings.shareSummary, 'Bagikan');
     expect(strings.useAgain, 'Pakai lagi');
+    expect(strings.paidStatus, 'Sudah bayar');
     expect(strings.modeLabel(SplitMode.items), 'Per Item');
   });
 
@@ -40,6 +41,7 @@ void main() {
     expect(strings.deleteBill, 'Delete bill');
     expect(strings.shareSummary, 'Share');
     expect(strings.useAgain, 'Use again');
+    expect(strings.paidStatus, 'Paid');
     expect(strings.modeLabel(SplitMode.items), 'By Items');
   });
 

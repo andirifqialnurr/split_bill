@@ -131,6 +131,7 @@ class SettlementResult {
     required this.roundingAmount,
     required this.amountDue,
     this.items = const [],
+    this.isPaid = false,
   });
 
   final BillParticipant participant;
@@ -140,6 +141,7 @@ class SettlementResult {
   final int roundingAmount;
   final int amountDue;
   final List<PersonItemShare> items;
+  final bool isPaid;
 }
 
 class BillCalculation {

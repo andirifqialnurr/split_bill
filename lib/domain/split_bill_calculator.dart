@@ -219,6 +219,7 @@ class SplitBillCalculator {
       roundingAmount: result.roundingAmount + delta,
       amountDue: result.amountDue + delta,
       items: result.items,
+      isPaid: result.isPaid,
     );
   }
 }

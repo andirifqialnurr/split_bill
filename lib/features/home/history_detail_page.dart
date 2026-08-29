@@ -6,7 +6,7 @@ import '../../ui/split_tokens.dart';
 import '../bill/new_bill_page.dart';
 import '../bill/result_page.dart';
 
-class HistoryDetailPage extends StatelessWidget {
+class HistoryDetailPage extends StatefulWidget {
   const HistoryDetailPage({
     super.key,
     required this.controller,
@@ -17,11 +17,16 @@ class HistoryDetailPage extends StatelessWidget {
   final int billId;
 
   @override
+  State<HistoryDetailPage> createState() => _HistoryDetailPageState();
+}
+
+class _HistoryDetailPageState extends State<HistoryDetailPage> {
+  @override
   Widget build(BuildContext context) {
-    final strings = controller.strings;
+    final strings = widget.controller.strings;
     return Scaffold(
       body: FutureBuilder(
-        future: controller.getBillDetail(billId),
+        future: widget.controller.getBillDetail(widget.billId),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
@@ -56,6 +61,21 @@ class HistoryDetailPage extends StatelessWidget {
                 title: detail.bill.title,
                 occurredAt: detail.bill.occurredAt,
                 mode: detail.bill.mode,
+                onPaidChanged: (result, isPaid) async {
+                  final updated = await widget.controller.setParticipantPaidStatus(
+                    billId: widget.billId,
+                    participantId: result.participant.localId,
+                    isPaid: isPaid,
+                  );
+                  if (!context.mounted) return;
+                  if (updated) {
+                    setState(() {});
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(strings.paidStatusFailed)),
+                    );
+                  }
+                },
                 onShare: () async {
                   await shareBillSummary(
                     detail.calculation,
@@ -77,7 +97,7 @@ class HistoryDetailPage extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context) async {
-    final strings = controller.strings;
+    final strings = widget.controller.strings;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -99,7 +119,7 @@ class HistoryDetailPage extends StatelessWidget {
     );
     if (confirmed != true || !context.mounted) return;
 
-    final deleted = await controller.deleteSavedBill(billId);
+    final deleted = await widget.controller.deleteSavedBill(widget.billId);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -112,8 +132,8 @@ class HistoryDetailPage extends StatelessWidget {
   }
 
   Future<void> _useAgain(BuildContext context) async {
-    final strings = controller.strings;
-    final duplicated = await controller.duplicateSavedBill(billId);
+    final strings = widget.controller.strings;
+    final duplicated = await widget.controller.duplicateSavedBill(widget.billId);
     if (!context.mounted) return;
     if (!duplicated) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -123,7 +143,7 @@ class HistoryDetailPage extends StatelessWidget {
     }
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => NewBillPage(controller: controller),
+        builder: (_) => NewBillPage(controller: widget.controller),
       ),
     );
   }

@@ -43,6 +43,26 @@ void main() {
     expect(draft.items.single.participantIds, ['p1', 'p2']);
     expect(draft.customShares, {'p1': 60000, 'p2': 40000});
   });
+
+  test('updates participant paid status without changing calculation amount', () async {
+    final repository = _FakeSplitBillRepository(
+      [_summary(1, 'Dinner')],
+      details: {1: _paidDetail(isPaid: false)},
+    );
+    final controller = SplitBillController(repository: repository);
+    addTearDown(controller.dispose);
+
+    final updated = await controller.setParticipantPaidStatus(
+      billId: 1,
+      participantId: '10',
+      isPaid: true,
+    );
+    final detail = await controller.getBillDetail(1);
+
+    expect(updated, isTrue);
+    expect(detail!.calculation.results.single.amountDue, 100000);
+    expect(detail.calculation.results.single.isPaid, isTrue);
+  });
 }
 
 SavedBillSummary _summary(int id, String title) {
@@ -91,9 +111,41 @@ SavedBillDetail _detail() {
   );
 }
 
+SavedBillDetail _paidDetail({required bool isPaid}) {
+  const participant = BillParticipant(localId: '10', name: 'Ayu', colorSeed: 0);
+  return SavedBillDetail(
+    id: 1,
+    bill: DraftBill(
+      title: 'Dinner',
+      occurredAt: DateTime(2026, 8, 1),
+      mode: SplitMode.equal,
+      equalTotalAmount: 100000,
+      participants: const [participant],
+    ),
+    calculation: BillCalculation(
+      subtotal: 100000,
+      taxAmount: 0,
+      serviceAmount: 0,
+      discountAmount: 0,
+      grandTotal: 100000,
+      results: [
+        SettlementResult(
+          participant: participant,
+          baseAmount: 100000,
+          chargesAmount: 0,
+          discountAmount: 0,
+          roundingAmount: 0,
+          amountDue: 100000,
+          isPaid: isPaid,
+        ),
+      ],
+    ),
+  );
+}
+
 class _FakeSplitBillRepository extends SplitBillRepository {
   _FakeSplitBillRepository(this._bills, {Map<int, SavedBillDetail>? details})
-      : _details = details ?? const {},
+      : _details = Map<int, SavedBillDetail>.from(details ?? const {}),
         super(SplitBillDatabase());
 
   List<SavedBillSummary> _bills;
@@ -114,5 +166,50 @@ class _FakeSplitBillRepository extends SplitBillRepository {
   @override
   Future<SavedBillDetail?> getBillDetail(int id) async {
     return _details[id];
+  }
+
+  @override
+  Future<bool> updateParticipantPaidStatus({
+    required int billId,
+    required int participantId,
+    required bool isPaid,
+  }) async {
+    final detail = _details[billId];
+    if (detail == null) return false;
+    final participantIdString = participantId.toString();
+    var updated = false;
+    final results = [
+      for (final result in detail.calculation.results)
+        if (result.participant.localId == participantIdString)
+          SettlementResult(
+            participant: result.participant,
+            baseAmount: result.baseAmount,
+            chargesAmount: result.chargesAmount,
+            discountAmount: result.discountAmount,
+            roundingAmount: result.roundingAmount,
+            amountDue: result.amountDue,
+            items: result.items,
+            isPaid: isPaid,
+          )
+        else
+          result,
+    ];
+    updated = results.any((result) {
+      return result.participant.localId == participantIdString && result.isPaid == isPaid;
+    });
+    if (!updated) return false;
+    _details[billId] = SavedBillDetail(
+      id: detail.id,
+      bill: detail.bill,
+      calculation: BillCalculation(
+        subtotal: detail.calculation.subtotal,
+        taxAmount: detail.calculation.taxAmount,
+        serviceAmount: detail.calculation.serviceAmount,
+        discountAmount: detail.calculation.discountAmount,
+        grandTotal: detail.calculation.grandTotal,
+        results: results,
+      ),
+    );
+    return true;
   }
 }

@@ -147,6 +147,11 @@ class SplitStrings {
       isEnglish ? 'Split Bill Summary' : 'Ringkasan Split Bill';
   String get perPerson => isEnglish ? 'Per person' : 'Per peserta';
   String get due => isEnglish ? 'Due' : 'Bayar';
+  String get paidStatus => isEnglish ? 'Paid' : 'Sudah bayar';
+  String get paid => isEnglish ? 'Paid' : 'Lunas';
+  String get unpaid => isEnglish ? 'Unpaid' : 'Belum bayar';
+  String get paidStatusFailed =>
+      isEnglish ? 'Could not update paid status.' : 'Status bayar gagal diubah.';
   String get baseItems => isEnglish ? 'Base items' : 'Item dasar';
   String get taxAndService =>
       isEnglish ? 'Tax and service' : 'Pajak dan layanan';

@@ -13,11 +13,12 @@ class SplitBillDatabase {
     final dbPath = await getDatabasesPath();
     final database = await openDatabase(
       p.join(dbPath, 'split_bill.db'),
-      version: 1,
+      version: 2,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
       onCreate: _createV1,
+      onUpgrade: _upgrade,
     );
     _database = database;
     return database;
@@ -102,7 +103,8 @@ CREATE TABLE settlement_results (
   charges_amount INTEGER NOT NULL DEFAULT 0,
   discount_amount INTEGER NOT NULL DEFAULT 0,
   rounding_amount INTEGER NOT NULL DEFAULT 0,
-  amount_due INTEGER NOT NULL DEFAULT 0
+  amount_due INTEGER NOT NULL DEFAULT 0,
+  is_paid INTEGER NOT NULL DEFAULT 0
 )
 ''');
 
@@ -114,5 +116,13 @@ CREATE TABLE settlement_results (
     await db.execute(
       'CREATE INDEX idx_settlement_results_bill_id ON settlement_results(bill_id)',
     );
+  }
+
+  static Future<void> _upgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+        'ALTER TABLE settlement_results ADD COLUMN is_paid INTEGER NOT NULL DEFAULT 0',
+      );
+    }
   }
 }
