@@ -20,6 +20,7 @@ void main() {
     final strings = SplitStrings(state.language);
 
     expect(state.language, AppLanguage.id);
+    expect(strings.all, 'Semua');
     expect(strings.newBill, 'Bill Baru');
     expect(strings.history, 'Riwayat');
     expect(strings.viewAll, 'Lihat semua');
@@ -31,6 +32,7 @@ void main() {
   test('returns English copy', () {
     const strings = SplitStrings(AppLanguage.en);
 
+    expect(strings.all, 'All');
     expect(strings.newBill, 'New Bill');
     expect(strings.history, 'History');
     expect(strings.viewAll, 'View all');

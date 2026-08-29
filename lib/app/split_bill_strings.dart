@@ -23,6 +23,7 @@ class SplitStrings {
   String get dark => isEnglish ? 'Dark' : 'Gelap';
   String get indonesia => 'Indonesia';
   String get english => 'English';
+  String get all => isEnglish ? 'All' : 'Semua';
   String get homeIntro =>
       isEnglish ? 'Split bills offline.' : 'Bagi tagihan offline.';
   String get newBillIntro => isEnglish

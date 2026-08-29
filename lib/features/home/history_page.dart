@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 
 import '../../app/split_bill_controller.dart';
 import '../../data/split_bill_repository.dart';
+import '../../domain/split_bill_models.dart';
 import '../../ui/split_components.dart';
 import '../../ui/split_tokens.dart';
 import 'history_detail_page.dart';
+
+enum _HistoryModeFilter { all, equal, items, custom }
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key, required this.controller});
@@ -17,6 +20,7 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
   final _searchController = TextEditingController();
+  var _modeFilter = _HistoryModeFilter.all;
 
   @override
   void dispose() {
@@ -31,6 +35,7 @@ class _HistoryPageState extends State<HistoryPage> {
     final history = controller.state.history;
     final searchQuery = _searchController.text.trim();
     final filteredHistory = history.where((bill) {
+      if (!_matchesModeFilter(bill.mode)) return false;
       return _matchesSearch(
         bill: bill,
         query: searchQuery,
@@ -55,6 +60,37 @@ class _HistoryPageState extends State<HistoryPage> {
             hint: strings.searchHistoryHint,
             textInputAction: TextInputAction.search,
             onChanged: (_) => setState(() {}),
+          ),
+        ),
+        SplitCard(
+          padding: const EdgeInsets.all(SplitSpacing.sm),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SegmentedButton<_HistoryModeFilter>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: _HistoryModeFilter.all,
+                  label: Text(strings.all),
+                ),
+                ButtonSegment(
+                  value: _HistoryModeFilter.equal,
+                  label: Text(strings.modeLabel(SplitMode.equal)),
+                ),
+                ButtonSegment(
+                  value: _HistoryModeFilter.items,
+                  label: Text(strings.modeLabel(SplitMode.items)),
+                ),
+                ButtonSegment(
+                  value: _HistoryModeFilter.custom,
+                  label: Text(strings.modeLabel(SplitMode.custom)),
+                ),
+              ],
+              selected: {_modeFilter},
+              onSelectionChanged: (selection) {
+                setState(() => _modeFilter = selection.single);
+              },
+            ),
           ),
         ),
         if (controller.state.isLoading)
@@ -89,6 +125,15 @@ class _HistoryPageState extends State<HistoryPage> {
           ),
       ],
     );
+  }
+
+  bool _matchesModeFilter(SplitMode mode) {
+    return switch (_modeFilter) {
+      _HistoryModeFilter.all => true,
+      _HistoryModeFilter.equal => mode == SplitMode.equal,
+      _HistoryModeFilter.items => mode == SplitMode.items,
+      _HistoryModeFilter.custom => mode == SplitMode.custom,
+    };
   }
 
   bool _matchesSearch({

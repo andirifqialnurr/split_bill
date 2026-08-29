@@ -158,12 +158,12 @@ Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatn
 
 ### 9.4 Filter History By Mode
 
-- [ ] Tambahkan filter chip atau segmented control: Semua, Split Rata, Per Item, Custom.
-- [ ] Kombinasikan filter dengan search bila 9.3 sudah selesai.
-- [ ] Pastikan filter memakai mode yang tersimpan di `SavedBillSummary`.
-- [ ] Tambahkan widget test filter mode.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint filter history.
+- [x] Tambahkan filter chip atau segmented control: Semua, Split Rata, Per Item, Custom.
+- [x] Kombinasikan filter dengan search bila 9.3 sudah selesai.
+- [x] Pastikan filter memakai mode yang tersimpan di `SavedBillSummary`.
+- [x] Tambahkan widget test filter mode.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint filter history.
 
 ### 9.5 Duplicate Bill From History
 

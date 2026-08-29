@@ -80,6 +80,38 @@ void main() {
     expect(find.text('Tidak ada hasil'), findsOneWidget);
   });
 
+  testWidgets('filters history by split mode', (tester) async {
+    final controller = SplitBillController(
+      repository: _FakeSplitBillRepository([
+        _summary(id: 1, title: 'Dinner', mode: SplitMode.items, participantCount: 3),
+        _summary(id: 2, title: 'Coffee', mode: SplitMode.equal, participantCount: 2),
+        _summary(id: 3, title: 'Trip', mode: SplitMode.custom, participantCount: 4),
+      ]),
+    );
+    addTearDown(controller.dispose);
+    await controller.loadHistory();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: HistoryPage(controller: controller)),
+      ),
+    );
+
+    await tester.tap(find.text('Split Rata').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Dinner'), findsNothing);
+    expect(find.text('Coffee'), findsOneWidget);
+    expect(find.text('Trip'), findsNothing);
+
+    await tester.tap(find.text('Per Item').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Dinner'), findsOneWidget);
+    expect(find.text('Coffee'), findsNothing);
+    expect(find.text('Trip'), findsNothing);
+  });
+
   testWidgets('switches to English from settings', (tester) async {
     await tester.pumpWidget(const SplitBillApp(loadPersistenceOnStart: false));
 
