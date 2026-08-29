@@ -117,8 +117,9 @@ Aturan kerja:
 - [x] Pastikan Home tidak punya card `Split Rata`, `Custom`, atau `Bill Baru`.
 - [x] Pastikan FAB `+` di kanan bawah membuka pencatatan bill.
 - [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Jalankan `flutter build apk --debug` bila Android SDK tersedia.
-- [ ] Lakukan visual check di device/emulator untuk mobile, light/dark, dan persistence restart.
+- [x] Jalankan `flutter build apk --debug` bila Android SDK tersedia.
+- [x] Lakukan device/emulator acceptance untuk mobile, light/dark, navigation, FAB, Riwayat, Settings, New Bill, dan persistence restart.
+  Catatan: interaksi diverifikasi lewat tap + `uiautomator` hierarchy di emulator; screenshot pixel dari `adb screencap` tetap hitam, jadi visual pixel tidak diklaim.
 
 ## 9. Next Simple Feature Backlog
 
@@ -189,6 +190,7 @@ Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatn
 
 - [x] `flutter analyze` clean pada checkpoint terakhir.
 - [x] `flutter test --concurrency=1` pass pada checkpoint terakhir.
-- [ ] `flutter build apk --debug` pass bila SDK Android tersedia.
-- [ ] Visual acceptance device/emulator untuk navigasi, FAB, Riwayat, Settings, dan New Bill.
-- [ ] Persistence restart validation untuk saved bill.
+- [x] `flutter build apk --debug` pass bila SDK Android tersedia.
+- [x] Device/emulator acceptance untuk navigasi, FAB, Riwayat, Settings, dan New Bill.
+  Catatan: hierarchy aktual emulator lulus, tetapi screenshot pixel emulator hitam sehingga klaim visual dibatasi ke bukti hierarchy/interaksi.
+- [x] Persistence restart validation untuk saved bill.
