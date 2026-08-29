@@ -14,6 +14,7 @@ void main() {
     expect(find.text('Split Bill'), findsOneWidget);
     expect(find.text('Bill Baru'), findsNothing);
     expect(find.text('Split Rata'), findsNothing);
+    expect(find.text('Lihat semua'), findsOneWidget);
     expect(find.byTooltip('Bill Baru'), findsOneWidget);
     expect(find.text('Bagi tagihan offline.'), findsOneWidget);
   });

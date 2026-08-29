@@ -6,6 +6,7 @@ import '../../data/split_bill_repository.dart';
 import '../../ui/split_components.dart';
 import '../../ui/split_tokens.dart';
 import 'history_detail_page.dart';
+import 'history_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.controller});
@@ -17,6 +18,7 @@ class HomePage extends StatelessWidget {
     final colors = context.splitColors;
     final strings = controller.strings;
     final history = controller.state.history;
+    final previewHistory = history.take(2).toList();
     final savedTotal = history.fold<int>(0, (sum, bill) => sum + bill.grandTotal);
     return SplitScreen(
       children: [
@@ -76,11 +78,13 @@ class HomePage extends StatelessWidget {
                   Expanded(
                     child: Text(strings.recentBills, style: Theme.of(context).textTheme.titleLarge),
                   ),
-                  Text(
-                    strings.savedCount(history.length),
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: colors.textMuted,
-                        ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => HistoryPage(controller: controller),
+                      ),
+                    ),
+                    child: Text(strings.viewAll),
                   ),
                 ],
               ),
@@ -96,7 +100,7 @@ class HomePage extends StatelessWidget {
               else
                 Column(
                   children: [
-                    for (final bill in history) ...[
+                    for (final bill in previewHistory) ...[
                       _HistoryCard(
                         bill: bill,
                         modeLabel: strings.modeLabel(bill.mode),
@@ -112,7 +116,7 @@ class HomePage extends StatelessWidget {
                           );
                         },
                       ),
-                      if (bill != history.last) const SizedBox(height: SplitSpacing.sm),
+                      if (bill != previewHistory.last) const SizedBox(height: SplitSpacing.sm),
                     ],
                   ],
                 ),

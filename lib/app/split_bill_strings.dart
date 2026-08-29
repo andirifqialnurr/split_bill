@@ -25,6 +25,7 @@ class SplitStrings {
   String get homeIntro => isEnglish ? 'Split bills offline.' : 'Bagi tagihan offline.';
   String get newBillIntro => isEnglish ? 'Add people, items, and charges.' : 'Tambah orang, item, dan biaya.';
   String get recentBills => isEnglish ? 'Recent Bills' : 'Riwayat';
+  String get viewAll => isEnglish ? 'View all' : 'Lihat semua';
   String get noBillsTitle => isEnglish ? 'No saved bills' : 'Belum ada bill';
   String get noBillsMessage => isEnglish ? 'Start with a new bill.' : 'Mulai dari bill baru.';
   String savedCount(int count) => isEnglish ? '$count saved' : '$count tersimpan';
