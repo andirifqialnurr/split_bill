@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/split_bill_controller.dart';
 import '../../ui/split_components.dart';
 import '../../ui/split_tokens.dart';
+import '../bill/new_bill_page.dart';
 import '../bill/result_page.dart';
 
 class HistoryDetailPage extends StatelessWidget {
@@ -44,6 +45,8 @@ class HistoryDetailPage extends StatelessWidget {
               _Header(
                 title: detail.bill.title.trim().isEmpty ? strings.savedBill : detail.bill.title,
                 backLabel: strings.back,
+                useAgainLabel: strings.useAgain,
+                onUseAgain: () => _useAgain(context),
                 deleteLabel: strings.deleteBill,
                 onDelete: () => _confirmDelete(context),
               ),
@@ -107,18 +110,39 @@ class HistoryDetailPage extends StatelessWidget {
       Navigator.of(context).pop();
     }
   }
+
+  Future<void> _useAgain(BuildContext context) async {
+    final strings = controller.strings;
+    final duplicated = await controller.duplicateSavedBill(billId);
+    if (!context.mounted) return;
+    if (!duplicated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(strings.duplicateFailed)),
+      );
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NewBillPage(controller: controller),
+      ),
+    );
+  }
 }
 
 class _Header extends StatelessWidget {
   const _Header({
     required this.title,
     required this.backLabel,
+    this.useAgainLabel,
+    this.onUseAgain,
     this.deleteLabel,
     this.onDelete,
   });
 
   final String title;
   final String backLabel;
+  final String? useAgainLabel;
+  final VoidCallback? onUseAgain;
   final String? deleteLabel;
   final VoidCallback? onDelete;
 
@@ -140,6 +164,14 @@ class _Header extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
+        if (onUseAgain != null) ...[
+          const SizedBox(width: SplitSpacing.sm),
+          SplitIconButton(
+            tooltip: useAgainLabel,
+            icon: Icons.replay_rounded,
+            onPressed: onUseAgain,
+          ),
+        ],
         if (onDelete != null) ...[
           const SizedBox(width: SplitSpacing.sm),
           SplitIconButton(

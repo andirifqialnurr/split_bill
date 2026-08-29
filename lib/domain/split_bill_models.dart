@@ -16,11 +16,12 @@ class BillParticipant {
   String get initial => name.trim().isEmpty ? '?' : name.trim()[0].toUpperCase();
 
   BillParticipant copyWith({
+    String? localId,
     String? name,
     int? colorSeed,
   }) {
     return BillParticipant(
-      localId: localId,
+      localId: localId ?? this.localId,
       name: name ?? this.name,
       colorSeed: colorSeed ?? this.colorSeed,
     );
@@ -43,13 +44,14 @@ class BillItem {
   final List<String> participantIds;
 
   BillItem copyWith({
+    String? localId,
     String? name,
     int? quantity,
     int? totalAmount,
     List<String>? participantIds,
   }) {
     return BillItem(
-      localId: localId,
+      localId: localId ?? this.localId,
       name: name ?? this.name,
       quantity: quantity ?? this.quantity,
       totalAmount: totalAmount ?? this.totalAmount,

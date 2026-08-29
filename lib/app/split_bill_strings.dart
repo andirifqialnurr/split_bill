@@ -52,6 +52,7 @@ class SplitStrings {
   String get saveBill => isEnglish ? 'Save Bill' : 'Simpan Bill';
   String get copySummary => isEnglish ? 'Copy Summary' : 'Salin Ringkasan';
   String get shareSummary => isEnglish ? 'Share' : 'Bagikan';
+  String get useAgain => isEnglish ? 'Use again' : 'Pakai lagi';
   String get cancel => isEnglish ? 'Cancel' : 'Batal';
   String get remove => isEnglish ? 'Remove' : 'Hapus';
   String get deleteBill => isEnglish ? 'Delete bill' : 'Hapus bill';
@@ -61,6 +62,8 @@ class SplitStrings {
       : 'Bill tersimpan ini akan dihapus dari perangkat ini.';
   String get billDeleted => isEnglish ? 'Bill deleted.' : 'Bill dihapus.';
   String get deleteFailed => isEnglish ? 'Could not delete bill.' : 'Bill gagal dihapus.';
+  String get duplicateFailed =>
+      isEnglish ? 'Could not reuse bill.' : 'Bill gagal dipakai lagi.';
   String get editParticipant => isEnglish ? 'Edit participant' : 'Edit peserta';
   String get billDetail => isEnglish ? 'Bill detail' : 'Detail bill';
   String get title => isEnglish ? 'Title' : 'Judul';

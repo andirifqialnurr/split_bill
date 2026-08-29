@@ -89,6 +89,58 @@ class SplitBillController extends ChangeNotifier {
     }
   }
 
+  Future<bool> duplicateSavedBill(int id) async {
+    try {
+      final detail = await _repository.getBillDetail(id);
+      if (detail == null) return false;
+
+      final participantIds = <String, String>{};
+      final participants = <BillParticipant>[];
+      for (final participant in detail.bill.participants) {
+        final localId = 'p${_nextLocalId++}';
+        participantIds[participant.localId] = localId;
+        participants.add(
+          participant.copyWith(localId: localId),
+        );
+      }
+
+      final items = [
+        for (final item in detail.bill.items)
+          item.copyWith(
+            localId: 'i${_nextLocalId++}',
+            participantIds: [
+              for (final participantId in item.participantIds)
+                if (participantIds[participantId] != null) participantIds[participantId]!,
+            ],
+          ),
+      ];
+
+      final customShares = <String, int>{};
+      for (final entry in detail.bill.customShares.entries) {
+        final participantId = participantIds[entry.key];
+        if (participantId == null) continue;
+        customShares[participantId] = entry.value;
+      }
+
+      _state = _state.copyWith(
+        draft: detail.bill.copyWith(
+          occurredAt: DateTime.now(),
+          participants: participants,
+          items: items,
+          customShares: customShares,
+        ),
+        currentStep: BillStep.detail,
+        clearError: true,
+      );
+      notifyListeners();
+      return true;
+    } catch (_) {
+      _state = _state.copyWith(errorMessage: 'Could not reuse bill.');
+      notifyListeners();
+      return false;
+    }
+  }
+
   void setTab(SplitTab tab) {
     if (_state.activeTab == tab) return;
     _state = _state.copyWith(activeTab: tab);

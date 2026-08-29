@@ -167,13 +167,13 @@ Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatn
 
 ### 9.5 Duplicate Bill From History
 
-- [ ] Tambahkan action `Pakai lagi` dari History Detail.
-- [ ] Buat draft baru dari bill lama dengan tanggal sekarang.
-- [ ] Pertahankan peserta, item, assignment, charges, dan mode.
-- [ ] Pastikan saved bill lama tidak ikut berubah.
-- [ ] Tambahkan test controller untuk duplicate draft.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint duplicate bill.
+- [x] Tambahkan action `Pakai lagi` dari History Detail.
+- [x] Buat draft baru dari bill lama dengan tanggal sekarang.
+- [x] Pertahankan peserta, item, assignment, charges, dan mode.
+- [x] Pastikan saved bill lama tidak ikut berubah.
+- [x] Tambahkan test controller untuk duplicate draft.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint duplicate bill.
 
 ### 9.6 Paid Checklist
 
