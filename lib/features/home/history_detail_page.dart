@@ -53,6 +53,18 @@ class HistoryDetailPage extends StatelessWidget {
                 title: detail.bill.title,
                 occurredAt: detail.bill.occurredAt,
                 mode: detail.bill.mode,
+                onShare: () async {
+                  await shareBillSummary(
+                    detail.calculation,
+                    strings: strings,
+                    title: detail.bill.title,
+                    occurredAt: detail.bill.occurredAt,
+                  );
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(strings.summaryReadyToShare)),
+                  );
+                },
               ),
             ],
           );

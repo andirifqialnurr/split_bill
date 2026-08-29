@@ -17,6 +17,7 @@ class ResultView extends StatelessWidget {
     this.occurredAt,
     this.mode,
     this.onCopy,
+    this.onShare,
     this.onSave,
     this.saveLabel,
   });
@@ -27,6 +28,7 @@ class ResultView extends StatelessWidget {
   final DateTime? occurredAt;
   final SplitMode? mode;
   final VoidCallback? onCopy;
+  final VoidCallback? onShare;
   final VoidCallback? onSave;
   final String? saveLabel;
 
@@ -50,29 +52,39 @@ class ResultView extends StatelessWidget {
           _PersonResultCard(result: result, strings: strings),
           if (result != calculation.results.last) const SizedBox(height: SplitSpacing.sm),
         ],
-        if (onCopy != null || onSave != null) ...[
+        if (onCopy != null || onShare != null || onSave != null) ...[
           const SizedBox(height: SplitSpacing.lg),
-          Row(
-            children: [
-              if (onCopy != null)
-                Expanded(
-                  child: SplitSecondaryButton(
-                    label: strings.copySummary,
-                    icon: Icons.content_copy_rounded,
-                    onPressed: onCopy,
+          if (onCopy != null || onShare != null)
+            Row(
+              children: [
+                if (onCopy != null)
+                  Expanded(
+                    child: SplitSecondaryButton(
+                      label: strings.copySummary,
+                      icon: Icons.content_copy_rounded,
+                      onPressed: onCopy,
+                    ),
                   ),
-                ),
-              if (onCopy != null && onSave != null) const SizedBox(width: SplitSpacing.sm),
-              if (onSave != null)
-                Expanded(
-                  child: SplitPrimaryButton(
-                    label: saveLabel ?? strings.saveBill,
-                    icon: Icons.save_rounded,
-                    onPressed: onSave,
+                if (onCopy != null && onShare != null) const SizedBox(width: SplitSpacing.sm),
+                if (onShare != null)
+                  Expanded(
+                    child: SplitSecondaryButton(
+                      label: strings.shareSummary,
+                      icon: Icons.ios_share_rounded,
+                      onPressed: onShare,
+                    ),
                   ),
-                ),
-            ],
-          ),
+              ],
+            ),
+          if ((onCopy != null || onShare != null) && onSave != null)
+            const SizedBox(height: SplitSpacing.sm),
+          if (onSave != null)
+            SplitPrimaryButton(
+              label: saveLabel ?? strings.saveBill,
+              icon: Icons.save_rounded,
+              expand: true,
+              onPressed: onSave,
+            ),
         ],
         const SizedBox(height: SplitSpacing.xs),
         Text(
@@ -246,6 +258,36 @@ Future<void> copyBillSummary(
   String? title,
   DateTime? occurredAt,
 }) async {
+  final text = buildBillSummaryText(
+    calculation,
+    strings: strings,
+    title: title,
+    occurredAt: occurredAt,
+  );
+  await Clipboard.setData(ClipboardData(text: text));
+}
+
+Future<void> shareBillSummary(
+  BillCalculation calculation, {
+  required SplitStrings strings,
+  String? title,
+  DateTime? occurredAt,
+}) async {
+  final text = buildBillSummaryText(
+    calculation,
+    strings: strings,
+    title: title,
+    occurredAt: occurredAt,
+  );
+  await Clipboard.setData(ClipboardData(text: text));
+}
+
+String buildBillSummaryText(
+  BillCalculation calculation, {
+  required SplitStrings strings,
+  String? title,
+  DateTime? occurredAt,
+}) {
   final buffer = StringBuffer()
     ..writeln(title == null || title.trim().isEmpty ? strings.splitBillSummary : title.trim());
   if (occurredAt != null) {
@@ -255,7 +297,7 @@ Future<void> copyBillSummary(
   for (final result in calculation.results) {
     buffer.writeln('${result.participant.name}: ${formatRupiah(result.amountDue)}');
   }
-  await Clipboard.setData(ClipboardData(text: buffer.toString().trim()));
+  return buffer.toString().trim();
 }
 
 String? _roundingNote(List<SettlementResult> results, SplitStrings strings) {

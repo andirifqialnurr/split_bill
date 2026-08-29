@@ -46,6 +46,7 @@ class SplitStrings {
   String get save => isEnglish ? 'Save' : 'Simpan';
   String get saveBill => isEnglish ? 'Save Bill' : 'Simpan Bill';
   String get copySummary => isEnglish ? 'Copy Summary' : 'Salin Ringkasan';
+  String get shareSummary => isEnglish ? 'Share' : 'Bagikan';
   String get cancel => isEnglish ? 'Cancel' : 'Batal';
   String get remove => isEnglish ? 'Remove' : 'Hapus';
   String get deleteBill => isEnglish ? 'Delete bill' : 'Hapus bill';
@@ -110,6 +111,8 @@ class SplitStrings {
   String get percent => isEnglish ? 'Percent' : 'Persen';
   String get summaryCopied =>
       isEnglish ? 'Summary copied.' : 'Ringkasan disalin.';
+  String get summaryReadyToShare =>
+      isEnglish ? 'Summary ready to share.' : 'Ringkasan siap dibagikan.';
   String get billSaved => isEnglish ? 'Bill saved.' : 'Bill tersimpan.';
   String get saveFailed =>
       isEnglish ? 'Could not save bill.' : 'Bill gagal disimpan.';

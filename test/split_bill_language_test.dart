@@ -24,6 +24,7 @@ void main() {
     expect(strings.history, 'Riwayat');
     expect(strings.viewAll, 'Lihat semua');
     expect(strings.deleteBill, 'Hapus bill');
+    expect(strings.shareSummary, 'Bagikan');
     expect(strings.modeLabel(SplitMode.items), 'Per Item');
   });
 
@@ -34,6 +35,7 @@ void main() {
     expect(strings.history, 'History');
     expect(strings.viewAll, 'View all');
     expect(strings.deleteBill, 'Delete bill');
+    expect(strings.shareSummary, 'Share');
     expect(strings.modeLabel(SplitMode.items), 'By Items');
   });
 
@@ -59,6 +61,14 @@ void main() {
 
     expect(text, contains('Split Bill Summary'));
     expect(text, contains('Ayu: Rp50.000'));
+  });
+
+  test('share summary uses the same text format', () async {
+    final text = await _captureSharedSummary(SplitStrings(AppLanguage.id));
+
+    expect(text, contains('Ringkasan Split Bill'));
+    expect(text, contains('Grand Total: Rp100.000'));
+    expect(text, contains('Bima: Rp50.000'));
   });
 }
 
@@ -97,4 +107,43 @@ Future<String> _captureCopiedSummary(SplitStrings strings) async {
   await copyBillSummary(calculation, strings: strings);
 
   return clipboardText ?? '';
+}
+
+Future<String> _captureSharedSummary(SplitStrings strings) async {
+  String? clipboardText;
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+    SystemChannels.platform,
+    (call) async {
+      if (call.method == 'Clipboard.setData') {
+        final arguments = call.arguments as Map<dynamic, dynamic>;
+        clipboardText = arguments['text'] as String?;
+      }
+      return null;
+    },
+  );
+  addTearDown(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    );
+  });
+
+  await shareBillSummary(_calculation(), strings: strings);
+
+  return clipboardText ?? '';
+}
+
+BillCalculation _calculation() {
+  const participants = [
+    BillParticipant(localId: 'p1', name: 'Ayu', colorSeed: 0),
+    BillParticipant(localId: 'p2', name: 'Bima', colorSeed: 1),
+  ];
+  return const SplitBillCalculator().calculate(
+    DraftBill(
+      occurredAt: DateTime(2026, 8, 29),
+      mode: SplitMode.equal,
+      equalTotalAmount: 100000,
+      participants: participants,
+    ),
+  );
 }

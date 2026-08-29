@@ -1015,6 +1015,18 @@ class _ResultStep extends StatelessWidget {
             SnackBar(content: Text(strings.summaryCopied)),
           );
         },
+        onShare: () async {
+          await shareBillSummary(
+            calculation,
+            strings: strings,
+            title: draft?.title,
+            occurredAt: draft?.occurredAt,
+          );
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(strings.summaryReadyToShare)),
+          );
+        },
         onSave: onSave,
       );
     } on BillValidationException catch (error) {

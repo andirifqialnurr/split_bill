@@ -137,13 +137,14 @@ Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatn
 
 ### 9.2 Share Split Result
 
-- [ ] Tambahkan dependency share native bila diperlukan dan tersedia lokal.
-- [ ] Tambahkan tombol share di Result dan History Detail.
-- [ ] Reuse format ringkasan dari Copy Summary agar output konsisten.
-- [ ] Pastikan fallback copy tetap tersedia bila share plugin tidak tersedia.
-- [ ] Tambahkan test untuk formatter/share text.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint share result.
+- [x] Tambahkan dependency share native bila diperlukan dan tersedia lokal.
+  Catatan: `share_plus` tidak tersedia di Pub cache lokal dan network restricted, jadi dependency native tidak ditambahkan.
+- [x] Tambahkan tombol share di Result dan History Detail.
+- [x] Reuse format ringkasan dari Copy Summary agar output konsisten.
+- [x] Pastikan fallback copy tetap tersedia bila share plugin tidak tersedia.
+- [x] Tambahkan test untuk formatter/share text.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint share result.
 
 ### 9.3 Search History
 
