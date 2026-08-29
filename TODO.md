@@ -1,131 +1,193 @@
-# Split Bill Active TODO
+# Split Bill TODO
 
-Tracker aktif untuk melanjutkan pekerjaan dari referensi visual `main2.dart` dan `DESIGN-SYSTEM (1).md`.
-Dokumen historis tetap ada di `cookbook/`; file ini dipakai sebagai checklist implementasi berjalan.
+Tracker tunggal untuk pekerjaan Split Bill. Isi historis dari `cookbook/TODO.md` sudah digabung ke file ini supaya kelanjutan kerja tidak terpecah di dua checklist.
 
 Aturan kerja:
 
-- Kerjakan task berurutan.
+- Kerjakan task berurutan per checkpoint yang jelas.
 - Setelah setiap task utama selesai: jalankan validasi relevan, update checklist, commit, lalu push.
 - Laporkan status commit dan push secara terpisah.
-- Jangan mengganti domain calculation atau SQLite persistence yang sudah berjalan kecuali perlu untuk menyambungkan UI.
+- Jangan mengganti domain calculation atau SQLite persistence yang sudah berjalan kecuali perlu untuk fitur yang sedang dikerjakan.
+- Untuk perubahan UI, pertahankan pola visual aktif: floating shell, bottom nav icon-only, FAB `+` untuk pencatatan bill, dan copy ringkas.
 
-## 1. Rencana Migrasi UI
+## 1. MVP Foundation
 
-- [x] Audit `main2.dart`, `DESIGN-SYSTEM (1).md`, dan kode aktif.
-- [x] Tetapkan batas migrasi: presentasi mengikuti referensi; state, calculator, repository, dan persistence tetap dari kode aktif.
-- [x] Commit dan push checkpoint rencana.
+- [x] Buat `PRD.md` untuk scope wajib.
+- [x] Buat `SCHEMA.md` untuk SQLite sqflite.
+- [x] Buat `ARCHITECTURE.md` untuk struktur app.
+- [x] Buat `DESIGN-SYSTEM.md` untuk UI light/dark.
+- [x] Tambahkan dependency `sqflite`, `path`, dan `intl`.
+- [x] Ganti counter template dengan bootstrap app Split Bill.
+- [x] Buat struktur folder `core`, `data`, `domain`, `features`, `ui`.
+- [x] Buat theme light/dark sesuai design system.
+- [x] Tambahkan widget test smoke untuk Home.
+- [x] Jalankan `flutter pub get`, `flutter analyze`, dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint foundation.
 
-## 2. Design Foundation
+## 2. Domain Calculation
 
-- [x] Selaraskan spacing, radius, palette light/dark, typography, dan app theme dengan referensi.
-- [x] Tambahkan reusable component foundation: card, screen layout, buttons, text field, empty state, warning banner, participant avatar/chip, mode badge, summary row, money text, dan floating nav.
-- [x] Pastikan widget foundation tetap memakai Material icons dan tidak membutuhkan dependency baru yang belum tersedia lokal.
+- [x] Buat model draft bill, participant, item, charge, dan result.
+- [x] Buat formatter rupiah dan parser nominal.
+- [x] Implementasi equal split.
+- [x] Implementasi by-items split dengan assignment.
+- [x] Implementasi custom amount split.
+- [x] Implementasi tax/service/discount allocation dan deterministic remainder.
+- [x] Tambahkan unit test calculation invariant.
 - [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [x] Commit dan push checkpoint design foundation.
+- [x] Commit dan push checkpoint calculation.
 
-## 3. Home, Settings, Dan Navigation
+## 3. Local Database
 
-- [x] Migrasikan Home agar first screen terasa seperti app aktual: header, quick actions, empty state, recent bills, dan history card sesuai referensi.
-- [x] Migrasikan Settings theme mode System/Light/Dark dengan segmented control yang konsisten.
-- [x] Pastikan floating bottom nav tetap ergonomic dan tidak menutup konten.
+- [x] Implementasi `SplitBillDatabase` sqflite.
+- [x] Implementasi schema v1 dan index.
+- [x] Implementasi repository save/list/detail bill.
+- [x] Simpan settlement snapshot dalam transaction.
+- [ ] Tambahkan repository test dengan database temp bila environment mendukung.
 - [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [x] Commit dan push checkpoint home/settings/navigation.
+- [x] Commit dan push checkpoint database.
 
-## 4. New Bill Wizard
+## 4. App State And Navigation
 
-- [x] Migrasikan step detail dan mode selection.
-- [x] Migrasikan people step dengan avatar/chip, edit, remove, dan cleanup confirmation.
-- [x] Migrasikan item entry, item tile, assignment sheet, dan unassigned state.
-- [x] Migrasikan charges/custom amount/review dengan validation helper yang jelas.
+- [x] Buat controller/state app tanpa cloud dependency.
+- [x] Implementasi Home/history state.
+- [x] Implementasi New Bill step navigation.
+- [x] Pastikan data tidak hilang saat pindah step.
+- [x] Implementasi Settings theme mode.
+- [x] Gunakan floating bottom nav untuk shell utama.
+- [x] Tambahkan tab Riwayat di bottom nav.
+- [x] Ubah bottom nav menjadi icon-only.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint state/navigation.
+
+## 5. Bill Entry UI
+
+- [x] Implementasi mode selection.
+- [x] Implementasi Detail bill form.
+- [x] Implementasi People step.
+- [x] Implementasi Items step.
+- [x] Implementasi Assign Item UI.
+- [x] Implementasi Charges step.
+- [x] Validasi empty, unassigned, incomplete custom, dan negative total.
+- [x] Migrasikan wizard ke visual aktif.
 - [x] Pastikan draft tidak hilang saat pindah step atau menekan back.
 - [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [x] Commit dan push checkpoint wizard.
+- [x] Commit dan push checkpoint entry UI.
 
-## 5. Result, History, Dan Acceptance
+## 6. Result And History
 
-- [x] Migrasikan `ResultView` agar Result dan History Detail memakai komponen breakdown yang sama.
-- [x] Pastikan Copy Summary dan Save bill tetap bekerja.
-- [x] Pastikan long item name, 8+ participants, light/dark, dan width kecil punya guard layout.
-- [x] Jalankan `flutter analyze`, `flutter test --concurrency=1`, dan `flutter build apk --debug` bila Android SDK tersedia.
-- [x] Commit dan push final state.
+- [x] Implementasi Review/Result screen.
+- [x] Implementasi breakdown per peserta.
+- [x] Implementasi expandable item detail.
+- [x] Implementasi Copy Summary.
+- [x] Implementasi Save bill ke history.
+- [x] Implementasi History Detail read-only.
+- [x] Tambahkan halaman Riwayat penuh.
+- [x] Batasi preview Riwayat di halaman Bill maksimal 2 item.
+- [x] Ganti counter kanan atas card Riwayat menjadi `Lihat semua`.
+- [x] Jadikan `Lihat semua` pindah ke tab Riwayat.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint result/history.
 
-## 6. Language Foundation
-
-Target: aplikasi mendukung Bahasa Indonesia dan English tanpa package i18n baru dulu.
-
-Commit plan:
-
-- Commit 1: model bahasa, state, controller, dan kamus teks dasar.
-- Commit 2: test smoke untuk pergantian bahasa.
-
-Checklist:
+## 7. Settings And Localization
 
 - [x] Tambahkan enum `AppLanguage` dengan nilai `id` dan `en`.
 - [x] Simpan pilihan bahasa di app state.
 - [x] Tambahkan controller action untuk mengganti bahasa.
-- [x] Buat helper teks lokal, misalnya `SplitStrings`.
+- [x] Buat helper teks lokal `SplitStrings`.
 - [x] Pastikan default bahasa tetap Indonesia.
-- [x] Tambahkan test untuk render Indonesia dan English.
-- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [x] Commit dan push checkpoint language foundation.
-
-## 7. Settings Language Selector
-
-Target: pilihan bahasa disimpan di halaman Settings.
-
-Commit plan:
-
-- Commit 1: UI selector bahasa di Settings.
-- Commit 2: sinkronisasi copy Settings agar ringkas.
-
-Checklist:
-
-- [x] Tambahkan section `Language` di Settings.
+- [x] Tambahkan section Language di Settings.
 - [x] Tambahkan segmented control `Indonesia` / `English`.
 - [x] Pastikan pilihan langsung mengubah teks aplikasi.
-- [x] Ringkas deskripsi Settings yang terlalu panjang.
-- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [x] Commit dan push checkpoint settings language.
-
-## 8. UI Copy Localization And Cleanup
-
-Target: semua teks utama tersedia dalam dua bahasa dan deskripsi dibuat lebih pendek.
-
-Commit plan:
-
-- Commit 1: Home, navigation, Settings.
-- Commit 2: New Bill wizard.
-- Commit 3: Result, History, snackbar, dialog, dan error.
-
-Checklist:
-
-- [x] Lokalkan teks Home.
-- [x] Lokalkan teks bottom navigation.
-- [x] Lokalkan teks Settings.
-- [x] Lokalkan teks New Bill detail, people, items, charges, custom, dan result step.
-- [x] Lokalkan teks Result dan History Detail.
-- [x] Lokalkan snackbar, dialog, empty state, warning, dan validation error.
+- [x] Lokalkan teks Home, navigation, Settings, wizard, Result, History Detail, snackbar, dialog, empty state, warning, dan validation error.
 - [x] Pendekkan copy yang panjang menjadi satu kalimat pendek.
-- [x] Pastikan label tombol tetap jelas.
-- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [x] Commit dan push checkpoint copy localization.
-
-## 9. Language Acceptance
-
-Target: fitur bahasa selesai dan tidak mengganggu split bill flow.
-
-Commit plan:
-
-- Commit 1: final validation dan checklist.
-
-Checklist:
-
 - [x] Uji acceptance otomatis flow Indonesia: Home -> New Bill -> Result.
 - [x] Uji acceptance otomatis flow English: Home -> New Bill -> Result.
 - [x] Pastikan Settings tetap bisa mengganti theme dan language.
 - [x] Pastikan Copy Summary mengikuti bahasa aktif.
-- [x] Jalankan `flutter analyze`.
-- [x] Jalankan `flutter test --concurrency=1`.
-- [x] Jalankan `flutter build apk --debug` bila Android SDK tersedia.
-- [x] Commit dan push final language state.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint localization.
+
+## 8. UI Polish And Acceptance
+
+- [x] Audit spacing konsisten.
+- [x] Audit data yang ditampilkan tidak duplikatif.
+- [x] Audit layout long item name dan 8+ participants.
+- [x] Audit small width behavior 320-359dp.
+- [x] Audit light/dark Result.
+- [x] Pastikan Home tidak punya card `Split Rata`, `Custom`, atau `Bill Baru`.
+- [x] Pastikan FAB `+` di kanan bawah membuka pencatatan bill.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Jalankan `flutter build apk --debug` bila Android SDK tersedia.
+- [ ] Lakukan visual check di device/emulator untuk mobile, light/dark, dan persistence restart.
+
+## 9. Next Simple Feature Backlog
+
+Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatnya, dan tidak mengubah core kalkulasi.
+
+### 9.1 Delete Saved Bill
+
+- [ ] Tambahkan action delete di `HistoryDetailPage`.
+- [ ] Tambahkan action delete pada item list di tab Riwayat bila layout tetap rapi.
+- [ ] Tambahkan confirmation dialog sebelum hapus.
+- [ ] Tambahkan repository/controller method delete bill dengan transaction atau cascade yang aman.
+- [ ] Refresh list history setelah delete.
+- [ ] Tambahkan test delete history bila environment mendukung.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint delete saved bill.
+
+### 9.2 Share Split Result
+
+- [ ] Tambahkan dependency share native bila diperlukan dan tersedia lokal.
+- [ ] Tambahkan tombol share di Result dan History Detail.
+- [ ] Reuse format ringkasan dari Copy Summary agar output konsisten.
+- [ ] Pastikan fallback copy tetap tersedia bila share plugin tidak tersedia.
+- [ ] Tambahkan test untuk formatter/share text.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint share result.
+
+### 9.3 Search History
+
+- [ ] Tambahkan search field di tab Riwayat.
+- [ ] Filter berdasarkan judul bill, mode, dan jumlah peserta.
+- [ ] Pastikan empty state search berbeda dari empty state belum ada bill.
+- [ ] Jaga search state tetap lokal di halaman Riwayat.
+- [ ] Tambahkan widget test pencarian sederhana.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint search history.
+
+### 9.4 Filter History By Mode
+
+- [ ] Tambahkan filter chip atau segmented control: Semua, Split Rata, Per Item, Custom.
+- [ ] Kombinasikan filter dengan search bila 9.3 sudah selesai.
+- [ ] Pastikan filter memakai mode yang tersimpan di `SavedBillSummary`.
+- [ ] Tambahkan widget test filter mode.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint filter history.
+
+### 9.5 Duplicate Bill From History
+
+- [ ] Tambahkan action `Pakai lagi` dari History Detail.
+- [ ] Buat draft baru dari bill lama dengan tanggal sekarang.
+- [ ] Pertahankan peserta, item, assignment, charges, dan mode.
+- [ ] Pastikan saved bill lama tidak ikut berubah.
+- [ ] Tambahkan test controller untuk duplicate draft.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint duplicate bill.
+
+### 9.6 Paid Checklist
+
+- [ ] Tambahkan status lokal sudah bayar/belum bayar per peserta pada saved bill.
+- [ ] Tentukan schema/migration SQLite yang tidak merusak snapshot lama.
+- [ ] Tampilkan checklist di Result setelah save atau di History Detail.
+- [ ] Pastikan checklist tidak mengubah hasil kalkulasi.
+- [ ] Tambahkan test persistence/checklist bila environment mendukung.
+- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [ ] Commit dan push checkpoint paid checklist.
+
+## 10. Final Validation Checklist
+
+- [x] `flutter analyze` clean pada checkpoint terakhir.
+- [x] `flutter test --concurrency=1` pass pada checkpoint terakhir.
+- [ ] `flutter build apk --debug` pass bila SDK Android tersedia.
+- [ ] Visual acceptance device/emulator untuk navigasi, FAB, Riwayat, Settings, dan New Bill.
+- [ ] Persistence restart validation untuk saved bill.
