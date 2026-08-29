@@ -76,27 +76,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: _QuickActionCard(
-                mode: SplitMode.equal,
-                title: strings.modeLabel(SplitMode.equal),
-                description: strings.modeDescription(SplitMode.equal),
-                onTap: () => _startBill(context, SplitMode.equal),
-              ),
-            ),
-            const SizedBox(width: SplitSpacing.md),
-            Expanded(
-              child: _QuickActionCard(
-                mode: SplitMode.custom,
-                title: strings.modeLabel(SplitMode.custom),
-                description: strings.modeDescription(SplitMode.custom),
-                onTap: () => _startBill(context, SplitMode.custom),
-              ),
-            ),
-          ],
-        ),
         SplitCard(
           child: Row(
             children: [
@@ -184,57 +163,6 @@ class HomePage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => NewBillPage(controller: controller),
-      ),
-    );
-  }
-}
-
-class _QuickActionCard extends StatelessWidget {
-  const _QuickActionCard({
-    required this.mode,
-    required this.title,
-    required this.description,
-    required this.onTap,
-  });
-
-  final SplitMode mode;
-  final String title;
-  final String description;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.splitColors;
-    return SplitCard(
-      onTap: onTap,
-      padding: const EdgeInsets.all(SplitSpacing.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              color: colors.surfaceAlt,
-              borderRadius: BorderRadius.circular(SplitRadius.sm),
-            ),
-            child: Icon(splitModeIcon(mode), size: 20, color: colors.secondary),
-          ),
-          const SizedBox(height: SplitSpacing.md),
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: SplitSpacing.xs),
-          Text(
-            description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-        ],
       ),
     );
   }
