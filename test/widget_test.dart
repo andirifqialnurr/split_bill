@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:split_bill/app/split_bill_controller.dart';
 import 'package:split_bill/app/split_bill_app.dart';
+import 'package:split_bill/data/split_bill_database.dart';
+import 'package:split_bill/data/split_bill_repository.dart';
+import 'package:split_bill/domain/split_bill_models.dart';
+import 'package:split_bill/features/home/history_page.dart';
 
 void main() {
   setUpAll(() async {
@@ -36,6 +41,43 @@ void main() {
 
     expect(find.text('Belum ada bill'), findsOneWidget);
     expect(find.byTooltip('Bill Baru'), findsNothing);
+  });
+
+  testWidgets('filters history by search keyword', (tester) async {
+    final controller = SplitBillController(
+      repository: _FakeSplitBillRepository([
+        _summary(id: 1, title: 'Dinner', mode: SplitMode.items, participantCount: 3),
+        _summary(id: 2, title: 'Coffee', mode: SplitMode.equal, participantCount: 2),
+      ]),
+    );
+    addTearDown(controller.dispose);
+    await controller.loadHistory();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: HistoryPage(controller: controller)),
+      ),
+    );
+
+    expect(find.text('Dinner'), findsOneWidget);
+    expect(find.text('Coffee'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const ValueKey('history-search-field')), 'coffee');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Dinner'), findsNothing);
+    expect(find.text('Coffee'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const ValueKey('history-search-field')), '3');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Dinner'), findsOneWidget);
+    expect(find.text('Coffee'), findsNothing);
+
+    await tester.enterText(find.byKey(const ValueKey('history-search-field')), 'missing');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Tidak ada hasil'), findsOneWidget);
   });
 
   testWidgets('switches to English from settings', (tester) async {
@@ -91,6 +133,33 @@ void main() {
       expectedPerPersonLabel: 'Per person',
     );
   });
+}
+
+SavedBillSummary _summary({
+  required int id,
+  required String title,
+  required SplitMode mode,
+  required int participantCount,
+}) {
+  return SavedBillSummary(
+    id: id,
+    title: title,
+    occurredAt: DateTime(2026, 8, 29),
+    mode: mode,
+    participantCount: participantCount,
+    grandTotal: 100000,
+  );
+}
+
+class _FakeSplitBillRepository extends SplitBillRepository {
+  _FakeSplitBillRepository(this._bills) : super(SplitBillDatabase());
+
+  final List<SavedBillSummary> _bills;
+
+  @override
+  Future<List<SavedBillSummary>> listBills() async {
+    return _bills;
+  }
 }
 
 Future<void> _completeEqualSplitFlow(

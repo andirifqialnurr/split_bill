@@ -6,15 +6,38 @@ import '../../ui/split_components.dart';
 import '../../ui/split_tokens.dart';
 import 'history_detail_page.dart';
 
-class HistoryPage extends StatelessWidget {
+class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key, required this.controller});
 
   final SplitBillController controller;
 
   @override
+  State<HistoryPage> createState() => _HistoryPageState();
+}
+
+class _HistoryPageState extends State<HistoryPage> {
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final controller = widget.controller;
     final strings = controller.strings;
     final history = controller.state.history;
+    final searchQuery = _searchController.text.trim();
+    final filteredHistory = history.where((bill) {
+      return _matchesSearch(
+        bill: bill,
+        query: searchQuery,
+        modeLabel: strings.modeLabel(bill.mode),
+        participantLabel: strings.participantCount(bill.participantCount),
+      );
+    }).toList(growable: false);
     return SplitScreen(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
       children: [
@@ -24,6 +47,16 @@ class HistoryPage extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: Theme.of(context).textTheme.headlineSmall,
         ),
+        SplitCard(
+          child: SplitTextField(
+            fieldKey: const ValueKey('history-search-field'),
+            controller: _searchController,
+            label: strings.searchHistory,
+            hint: strings.searchHistoryHint,
+            textInputAction: TextInputAction.search,
+            onChanged: (_) => setState(() {}),
+          ),
+        ),
         if (controller.state.isLoading)
           const Center(child: CircularProgressIndicator())
         else if (history.isEmpty)
@@ -32,10 +65,16 @@ class HistoryPage extends StatelessWidget {
             title: strings.noBillsTitle,
             message: strings.noBillsMessage,
           )
+        else if (filteredHistory.isEmpty)
+          SplitEmptyState(
+            icon: Icons.search_off_rounded,
+            title: strings.noSearchResultsTitle,
+            message: strings.noSearchResultsMessage,
+          )
         else
           Column(
             children: [
-              for (final bill in history) ...[
+              for (final bill in filteredHistory) ...[
                 _HistoryListTile(
                   bill: bill,
                   modeLabel: strings.modeLabel(bill.mode),
@@ -44,7 +83,7 @@ class HistoryPage extends StatelessWidget {
                   onTap: () => _openDetail(context, bill.id),
                   onDelete: () => _confirmDelete(context, bill.id),
                 ),
-                if (bill != history.last) const SizedBox(height: SplitSpacing.sm),
+                if (bill != filteredHistory.last) const SizedBox(height: SplitSpacing.sm),
               ],
             ],
           ),
@@ -52,11 +91,25 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
+  bool _matchesSearch({
+    required SavedBillSummary bill,
+    required String query,
+    required String modeLabel,
+    required String participantLabel,
+  }) {
+    if (query.isEmpty) return true;
+    final normalized = query.toLowerCase();
+    return bill.title.toLowerCase().contains(normalized) ||
+        modeLabel.toLowerCase().contains(normalized) ||
+        participantLabel.toLowerCase().contains(normalized) ||
+        bill.participantCount.toString().contains(normalized);
+  }
+
   void _openDetail(BuildContext context, int billId) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => HistoryDetailPage(
-          controller: controller,
+          controller: widget.controller,
           billId: billId,
         ),
       ),
@@ -64,7 +117,7 @@ class HistoryPage extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, int billId) async {
-    final strings = controller.strings;
+    final strings = widget.controller.strings;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
@@ -86,7 +139,7 @@ class HistoryPage extends StatelessWidget {
     );
     if (confirmed != true || !context.mounted) return;
 
-    final deleted = await controller.deleteSavedBill(billId);
+    final deleted = await widget.controller.deleteSavedBill(billId);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

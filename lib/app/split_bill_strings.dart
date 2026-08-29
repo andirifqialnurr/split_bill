@@ -30,9 +30,13 @@ class SplitStrings {
       : 'Tambah orang, item, dan biaya.';
   String get recentBills => isEnglish ? 'Recent Bills' : 'Riwayat';
   String get viewAll => isEnglish ? 'View all' : 'Lihat semua';
+  String get searchHistory => isEnglish ? 'Search history' : 'Cari riwayat';
+  String get searchHistoryHint => isEnglish ? 'Title, mode, or people' : 'Judul, mode, atau orang';
   String get noBillsTitle => isEnglish ? 'No saved bills' : 'Belum ada bill';
   String get noBillsMessage =>
       isEnglish ? 'Start with a new bill.' : 'Mulai dari bill baru.';
+  String get noSearchResultsTitle => isEnglish ? 'No results' : 'Tidak ada hasil';
+  String get noSearchResultsMessage => isEnglish ? 'Try another keyword.' : 'Coba kata kunci lain.';
   String savedCount(int count) =>
       isEnglish ? '$count saved' : '$count tersimpan';
   String participantCount(int count) =>

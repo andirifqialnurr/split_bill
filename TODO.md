@@ -148,13 +148,13 @@ Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatn
 
 ### 9.3 Search History
 
-- [ ] Tambahkan search field di tab Riwayat.
-- [ ] Filter berdasarkan judul bill, mode, dan jumlah peserta.
-- [ ] Pastikan empty state search berbeda dari empty state belum ada bill.
-- [ ] Jaga search state tetap lokal di halaman Riwayat.
-- [ ] Tambahkan widget test pencarian sederhana.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint search history.
+- [x] Tambahkan search field di tab Riwayat.
+- [x] Filter berdasarkan judul bill, mode, dan jumlah peserta.
+- [x] Pastikan empty state search berbeda dari empty state belum ada bill.
+- [x] Jaga search state tetap lokal di halaman Riwayat.
+- [x] Tambahkan widget test pencarian sederhana.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint search history.
 
 ### 9.4 Filter History By Mode
 
