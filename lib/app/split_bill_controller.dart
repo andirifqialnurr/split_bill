@@ -74,6 +74,21 @@ class SplitBillController extends ChangeNotifier {
     return _repository.getBillDetail(id);
   }
 
+  Future<bool> deleteSavedBill(int id) async {
+    try {
+      final deleted = await _repository.deleteBill(id);
+      if (!deleted) return false;
+      final history = await _repository.listBills();
+      _state = _state.copyWith(history: history, clearError: true);
+      notifyListeners();
+      return true;
+    } catch (_) {
+      _state = _state.copyWith(errorMessage: 'Could not delete bill.');
+      notifyListeners();
+      return false;
+    }
+  }
+
   void setTab(SplitTab tab) {
     if (_state.activeTab == tab) return;
     _state = _state.copyWith(activeTab: tab);

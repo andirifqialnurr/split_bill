@@ -23,6 +23,7 @@ void main() {
     expect(strings.newBill, 'Bill Baru');
     expect(strings.history, 'Riwayat');
     expect(strings.viewAll, 'Lihat semua');
+    expect(strings.deleteBill, 'Hapus bill');
     expect(strings.modeLabel(SplitMode.items), 'Per Item');
   });
 
@@ -32,6 +33,7 @@ void main() {
     expect(strings.newBill, 'New Bill');
     expect(strings.history, 'History');
     expect(strings.viewAll, 'View all');
+    expect(strings.deleteBill, 'Delete bill');
     expect(strings.modeLabel(SplitMode.items), 'By Items');
   });
 

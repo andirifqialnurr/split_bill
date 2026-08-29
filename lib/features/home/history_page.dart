@@ -40,7 +40,9 @@ class HistoryPage extends StatelessWidget {
                   bill: bill,
                   modeLabel: strings.modeLabel(bill.mode),
                   participantLabel: strings.participantCount(bill.participantCount),
+                  deleteLabel: strings.deleteBill,
                   onTap: () => _openDetail(context, bill.id),
+                  onDelete: () => _confirmDelete(context, bill.id),
                 ),
                 if (bill != history.last) const SizedBox(height: SplitSpacing.sm),
               ],
@@ -60,6 +62,38 @@ class HistoryPage extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _confirmDelete(BuildContext context, int billId) async {
+    final strings = controller.strings;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(strings.deleteBillTitle),
+          content: Text(strings.deleteBillMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(strings.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(strings.remove),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final deleted = await controller.deleteSavedBill(billId);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(deleted ? strings.billDeleted : strings.deleteFailed),
+      ),
+    );
+  }
 }
 
 class _HistoryListTile extends StatelessWidget {
@@ -67,13 +101,17 @@ class _HistoryListTile extends StatelessWidget {
     required this.bill,
     required this.modeLabel,
     required this.participantLabel,
+    required this.deleteLabel,
     required this.onTap,
+    required this.onDelete,
   });
 
   final SavedBillSummary bill;
   final String modeLabel;
   final String participantLabel;
+  final String deleteLabel;
   final VoidCallback onTap;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -119,13 +157,15 @@ class _HistoryListTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: SplitSpacing.md),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  SplitMoneyText(bill.grandTotal, size: 13.5),
-                  const SizedBox(height: SplitSpacing.xs),
-                  Icon(Icons.chevron_right_rounded, color: colors.textMuted, size: 20),
-                ],
+              SplitMoneyText(bill.grandTotal, size: 13.5),
+              IconButton(
+                tooltip: deleteLabel,
+                onPressed: onDelete,
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  color: colors.textMuted,
+                  size: 20,
+                ),
               ),
             ],
           ),

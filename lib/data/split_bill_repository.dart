@@ -155,6 +155,12 @@ ORDER BY b.occurred_at DESC, b.created_at DESC
     });
   }
 
+  Future<bool> deleteBill(int id) async {
+    final db = await database.instance;
+    final count = await db.delete('bills', where: 'id = ?', whereArgs: [id]);
+    return count > 0;
+  }
+
   Future<SavedBillDetail?> getBillDetail(int id) async {
     final db = await database.instance;
     final bills = await db.query('bills', where: 'id = ?', whereArgs: [id], limit: 1);

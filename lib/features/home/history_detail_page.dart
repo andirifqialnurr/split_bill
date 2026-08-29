@@ -44,6 +44,8 @@ class HistoryDetailPage extends StatelessWidget {
               _Header(
                 title: detail.bill.title.trim().isEmpty ? strings.savedBill : detail.bill.title,
                 backLabel: strings.back,
+                deleteLabel: strings.deleteBill,
+                onDelete: () => _confirmDelete(context),
               ),
               ResultView(
                 calculation: detail.calculation,
@@ -58,16 +60,55 @@ class HistoryDetailPage extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final strings = controller.strings;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(strings.deleteBillTitle),
+          content: Text(strings.deleteBillMessage),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(strings.cancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(strings.remove),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    final deleted = await controller.deleteSavedBill(billId);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(deleted ? strings.billDeleted : strings.deleteFailed),
+      ),
+    );
+    if (deleted) {
+      Navigator.of(context).pop();
+    }
+  }
 }
 
 class _Header extends StatelessWidget {
   const _Header({
     required this.title,
     required this.backLabel,
+    this.deleteLabel,
+    this.onDelete,
   });
 
   final String title;
   final String backLabel;
+  final String? deleteLabel;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +128,14 @@ class _Header extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
+        if (onDelete != null) ...[
+          const SizedBox(width: SplitSpacing.sm),
+          SplitIconButton(
+            tooltip: deleteLabel,
+            icon: Icons.delete_outline_rounded,
+            onPressed: onDelete,
+          ),
+        ],
       ],
     );
   }

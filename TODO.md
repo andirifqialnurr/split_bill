@@ -126,14 +126,14 @@ Prioritas yang disarankan: mulai dari fitur yang kecil, terasa langsung manfaatn
 
 ### 9.1 Delete Saved Bill
 
-- [ ] Tambahkan action delete di `HistoryDetailPage`.
-- [ ] Tambahkan action delete pada item list di tab Riwayat bila layout tetap rapi.
-- [ ] Tambahkan confirmation dialog sebelum hapus.
-- [ ] Tambahkan repository/controller method delete bill dengan transaction atau cascade yang aman.
-- [ ] Refresh list history setelah delete.
-- [ ] Tambahkan test delete history bila environment mendukung.
-- [ ] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
-- [ ] Commit dan push checkpoint delete saved bill.
+- [x] Tambahkan action delete di `HistoryDetailPage`.
+- [x] Tambahkan action delete pada item list di tab Riwayat bila layout tetap rapi.
+- [x] Tambahkan confirmation dialog sebelum hapus.
+- [x] Tambahkan repository/controller method delete bill dengan transaction atau cascade yang aman.
+- [x] Refresh list history setelah delete.
+- [x] Tambahkan test delete history bila environment mendukung.
+- [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
+- [x] Commit dan push checkpoint delete saved bill.
 
 ### 9.2 Share Split Result
 
