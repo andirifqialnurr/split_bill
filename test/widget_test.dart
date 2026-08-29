@@ -15,7 +15,7 @@ void main() {
     expect(find.text('Bill Baru'), findsNothing);
     expect(find.text('Split Rata'), findsNothing);
     expect(find.text('Lihat semua'), findsOneWidget);
-    expect(find.text('Riwayat'), findsWidgets);
+    expect(find.byTooltip('Riwayat'), findsOneWidget);
     expect(find.byTooltip('Bill Baru'), findsOneWidget);
     expect(find.text('Bagi tagihan offline.'), findsOneWidget);
   });
@@ -29,9 +29,9 @@ void main() {
     expect(find.text('Belum ada bill'), findsOneWidget);
     expect(find.byTooltip('Bill Baru'), findsNothing);
 
-    await tester.tap(find.text('Bill'));
+    await tester.tap(find.byTooltip('Bill'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Riwayat').last);
+    await tester.tap(find.byTooltip('Riwayat'));
     await tester.pumpAndSettle();
 
     expect(find.text('Belum ada bill'), findsOneWidget);
@@ -41,13 +41,13 @@ void main() {
   testWidgets('switches to English from settings', (tester) async {
     await tester.pumpWidget(const SplitBillApp(loadPersistenceOnStart: false));
 
-    await tester.tap(find.text('Pengaturan'));
+    await tester.tap(find.byTooltip('Pengaturan'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('English'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Dark'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Bills'));
+    await tester.tap(find.byTooltip('Bills'));
     await tester.pumpAndSettle();
 
     expect(find.text('Dark'), findsNothing);
@@ -74,11 +74,11 @@ void main() {
   testWidgets('completes English equal split flow', (tester) async {
     await tester.pumpWidget(const SplitBillApp(loadPersistenceOnStart: false));
 
-    await tester.tap(find.text('Pengaturan'));
+    await tester.tap(find.byTooltip('Pengaturan'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('English'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Bills'));
+    await tester.tap(find.byTooltip('Bills'));
     await tester.pumpAndSettle();
 
     await _completeEqualSplitFlow(

@@ -749,36 +749,21 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.splitColors;
     return Expanded(
-      child: Material(
-        color: selected ? colors.primary : Colors.transparent,
-        borderRadius: BorderRadius.circular(SplitRadius.pill),
-        child: InkWell(
+      child: Tooltip(
+        message: label,
+        child: Material(
+          color: selected ? colors.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(SplitRadius.pill),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: SplitSpacing.md,
-              vertical: SplitSpacing.md,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 20,
-                  color: selected ? Colors.white : colors.textSecondary,
-                ),
-                const SizedBox(width: SplitSpacing.sm),
-                Flexible(
-                  child: Text(
-                    label,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: selected ? Colors.white : colors.textSecondary,
-                        ),
-                  ),
-                ),
-              ],
+          child: InkWell(
+            borderRadius: BorderRadius.circular(SplitRadius.pill),
+            onTap: onTap,
+            child: SizedBox(
+              height: 48,
+              child: Icon(
+                icon,
+                size: 22,
+                color: selected ? Colors.white : colors.textSecondary,
+              ),
             ),
           ),
         ),
