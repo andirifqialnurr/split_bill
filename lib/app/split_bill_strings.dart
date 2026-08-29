@@ -10,6 +10,7 @@ class SplitStrings {
 
   String get appTitle => 'Split Bill';
   String get bills => isEnglish ? 'Bills' : 'Bill';
+  String get history => isEnglish ? 'History' : 'Riwayat';
   String get settings => isEnglish ? 'Settings' : 'Pengaturan';
   String get newBill => isEnglish ? 'New Bill' : 'Bill Baru';
   String get equalSplit => isEnglish ? 'Equal Split' : 'Split Rata';

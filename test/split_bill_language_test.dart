@@ -21,6 +21,7 @@ void main() {
 
     expect(state.language, AppLanguage.id);
     expect(strings.newBill, 'Bill Baru');
+    expect(strings.history, 'Riwayat');
     expect(strings.viewAll, 'Lihat semua');
     expect(strings.modeLabel(SplitMode.items), 'Per Item');
   });
@@ -29,6 +30,7 @@ void main() {
     const strings = SplitStrings(AppLanguage.en);
 
     expect(strings.newBill, 'New Bill');
+    expect(strings.history, 'History');
     expect(strings.viewAll, 'View all');
     expect(strings.modeLabel(SplitMode.items), 'By Items');
   });

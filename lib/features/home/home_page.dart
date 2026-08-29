@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../app/split_bill_controller.dart';
+import '../../app/split_bill_state.dart';
 import '../../core/money.dart';
 import '../../data/split_bill_repository.dart';
 import '../../ui/split_components.dart';
 import '../../ui/split_tokens.dart';
 import 'history_detail_page.dart';
-import 'history_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.controller});
@@ -79,11 +79,7 @@ class HomePage extends StatelessWidget {
                     child: Text(strings.recentBills, style: Theme.of(context).textTheme.titleLarge),
                   ),
                   TextButton(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => HistoryPage(controller: controller),
-                      ),
-                    ),
+                    onPressed: () => controller.setTab(SplitTab.history),
                     child: Text(strings.viewAll),
                   ),
                 ],
@@ -126,7 +122,6 @@ class HomePage extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class _MetricTile extends StatelessWidget {

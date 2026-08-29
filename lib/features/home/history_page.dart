@@ -15,35 +15,38 @@ class HistoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final strings = controller.strings;
     final history = controller.state.history;
-    return Scaffold(
-      body: SplitScreen(
-        padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
-        children: [
-          _Header(title: strings.recentBills, backLabel: strings.back),
-          if (controller.state.isLoading)
-            const Center(child: CircularProgressIndicator())
-          else if (history.isEmpty)
-            SplitEmptyState(
-              icon: Icons.receipt_long_outlined,
-              title: strings.noBillsTitle,
-              message: strings.noBillsMessage,
-            )
-          else
-            Column(
-              children: [
-                for (final bill in history) ...[
-                  _HistoryListTile(
-                    bill: bill,
-                    modeLabel: strings.modeLabel(bill.mode),
-                    participantLabel: strings.participantCount(bill.participantCount),
-                    onTap: () => _openDetail(context, bill.id),
-                  ),
-                  if (bill != history.last) const SizedBox(height: SplitSpacing.sm),
-                ],
+    return SplitScreen(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 24),
+      children: [
+        Text(
+          strings.history,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        if (controller.state.isLoading)
+          const Center(child: CircularProgressIndicator())
+        else if (history.isEmpty)
+          SplitEmptyState(
+            icon: Icons.receipt_long_outlined,
+            title: strings.noBillsTitle,
+            message: strings.noBillsMessage,
+          )
+        else
+          Column(
+            children: [
+              for (final bill in history) ...[
+                _HistoryListTile(
+                  bill: bill,
+                  modeLabel: strings.modeLabel(bill.mode),
+                  participantLabel: strings.participantCount(bill.participantCount),
+                  onTap: () => _openDetail(context, bill.id),
+                ),
+                if (bill != history.last) const SizedBox(height: SplitSpacing.sm),
               ],
-            ),
-        ],
-      ),
+            ],
+          ),
+      ],
     );
   }
 
@@ -55,38 +58,6 @@ class HistoryPage extends StatelessWidget {
           billId: billId,
         ),
       ),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header({
-    required this.title,
-    required this.backLabel,
-  });
-
-  final String title;
-  final String backLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SplitIconButton(
-          tooltip: backLabel,
-          icon: Icons.arrow_back_rounded,
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        const SizedBox(width: SplitSpacing.md),
-        Expanded(
-          child: Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-      ],
     );
   }
 }

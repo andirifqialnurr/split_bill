@@ -15,8 +15,27 @@ void main() {
     expect(find.text('Bill Baru'), findsNothing);
     expect(find.text('Split Rata'), findsNothing);
     expect(find.text('Lihat semua'), findsOneWidget);
+    expect(find.text('Riwayat'), findsWidgets);
     expect(find.byTooltip('Bill Baru'), findsOneWidget);
     expect(find.text('Bagi tagihan offline.'), findsOneWidget);
+  });
+
+  testWidgets('opens history from bottom nav and home view all action', (tester) async {
+    await tester.pumpWidget(const SplitBillApp(loadPersistenceOnStart: false));
+
+    await tester.tap(find.text('Lihat semua'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Belum ada bill'), findsOneWidget);
+    expect(find.byTooltip('Bill Baru'), findsNothing);
+
+    await tester.tap(find.text('Bill'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Riwayat').last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Belum ada bill'), findsOneWidget);
+    expect(find.byTooltip('Bill Baru'), findsNothing);
   });
 
   testWidgets('switches to English from settings', (tester) async {

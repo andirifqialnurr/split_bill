@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/split_bill_repository.dart';
 import '../domain/split_bill_models.dart';
 
-enum SplitTab { home, settings }
+enum SplitTab { home, history, settings }
 
 enum BillStep { detail, people, items, charges, result }
 

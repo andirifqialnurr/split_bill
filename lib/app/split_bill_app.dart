@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../domain/split_bill_models.dart';
 import '../features/bill/new_bill_page.dart';
 import '../features/home/home_page.dart';
+import '../features/home/history_page.dart';
 import '../features/settings/settings_page.dart';
 import '../ui/split_components.dart';
 import '../ui/split_theme.dart';
@@ -64,6 +65,7 @@ class SplitShell extends StatelessWidget {
     final state = controller.state;
     final page = switch (state.activeTab) {
       SplitTab.home => HomePage(controller: controller),
+      SplitTab.history => HistoryPage(controller: controller),
       SplitTab.settings => SettingsPage(controller: controller),
     };
 
@@ -88,6 +90,7 @@ class SplitShell extends StatelessWidget {
         activeTab: state.activeTab,
         onChanged: controller.setTab,
         billsLabel: controller.strings.bills,
+        historyLabel: controller.strings.history,
         settingsLabel: controller.strings.settings,
       ),
     );

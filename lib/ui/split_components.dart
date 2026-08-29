@@ -674,12 +674,14 @@ class SplitFloatingNav extends StatelessWidget {
     required this.activeTab,
     required this.onChanged,
     this.billsLabel = 'Bills',
+    this.historyLabel = 'History',
     this.settingsLabel = 'Settings',
   });
 
   final SplitTab activeTab;
   final ValueChanged<SplitTab> onChanged;
   final String billsLabel;
+  final String historyLabel;
   final String settingsLabel;
 
   @override
@@ -709,6 +711,12 @@ class SplitFloatingNav extends StatelessWidget {
                 label: billsLabel,
                 selected: activeTab == SplitTab.home,
                 onTap: () => onChanged(SplitTab.home),
+              ),
+              _NavItem(
+                icon: Icons.history_rounded,
+                label: historyLabel,
+                selected: activeTab == SplitTab.history,
+                onTap: () => onChanged(SplitTab.history),
               ),
               _NavItem(
                 icon: Icons.tune_rounded,
