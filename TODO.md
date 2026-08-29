@@ -42,7 +42,7 @@ Aturan kerja:
 - [x] Implementasi schema v1 dan index.
 - [x] Implementasi repository save/list/detail bill.
 - [x] Simpan settlement snapshot dalam transaction.
-- [ ] Tambahkan repository test dengan database temp bila environment mendukung.
+- [x] Tambahkan repository test dengan database temp bila environment mendukung.
 - [x] Jalankan `flutter analyze` dan `flutter test --concurrency=1`.
 - [x] Commit dan push checkpoint database.
 
