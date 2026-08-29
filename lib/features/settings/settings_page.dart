@@ -23,7 +23,10 @@ class SettingsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(strings.settings, style: Theme.of(context).textTheme.headlineMedium),
+                  Text(
+                    strings.settings,
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
                   const SizedBox(height: SplitSpacing.xs),
                   Text(
                     strings.localOnly,
@@ -47,11 +50,9 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(strings.theme, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: SplitSpacing.xs),
               Text(
-                strings.chooseTheme,
-                style: Theme.of(context).textTheme.bodyMedium,
+                strings.theme,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: SplitSpacing.lg),
               SegmentedButton<ThemeMode>(
@@ -85,9 +86,10 @@ class SettingsPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(strings.languageLabel, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: SplitSpacing.xs),
-              Text(strings.chooseLanguage, style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                strings.languageLabel,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
               const SizedBox(height: SplitSpacing.lg),
               SegmentedButton<AppLanguage>(
                 showSelectedIcon: false,
@@ -107,21 +109,6 @@ class SettingsPage extends StatelessWidget {
                 onSelectionChanged: (value) {
                   controller.setLanguage(value.first);
                 },
-              ),
-            ],
-          ),
-        ),
-        SplitCard(
-          backgroundColor: colors.surfaceAlt,
-          child: Row(
-            children: [
-              Icon(Icons.storage_rounded, color: colors.textMuted),
-              const SizedBox(width: SplitSpacing.md),
-              Expanded(
-                child: Text(
-                  strings.localOnly,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
               ),
             ],
           ),
