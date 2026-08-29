@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app/split_bill_controller.dart';
 import '../../core/money.dart';
 import '../../data/split_bill_repository.dart';
-import '../../domain/split_bill_models.dart';
 import '../../ui/split_components.dart';
 import '../../ui/split_tokens.dart';
-import '../bill/new_bill_page.dart';
 import 'history_detail_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -47,34 +45,6 @@ class HomePage extends StatelessWidget {
               child: Icon(Icons.groups_rounded, color: colors.primary),
             ),
           ],
-        ),
-        SplitCard(
-          backgroundColor: colors.primarySoft.withValues(alpha: 0.5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(strings.newBill, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: SplitSpacing.sm),
-              Text(
-                strings.newBillIntro,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: SplitSpacing.lg),
-              SplitPrimaryButton(
-                label: strings.newBill,
-                icon: Icons.add_rounded,
-                expand: true,
-                onPressed: () => _startBill(context, SplitMode.items),
-              ),
-              const SizedBox(height: SplitSpacing.sm),
-              SplitSecondaryButton(
-                label: strings.equalSplit,
-                icon: Icons.balance_rounded,
-                expand: true,
-                onPressed: () => _startBill(context, SplitMode.equal),
-              ),
-            ],
-          ),
         ),
         SplitCard(
           child: Row(
@@ -122,11 +92,6 @@ class HomePage extends StatelessWidget {
                   icon: Icons.receipt_long_outlined,
                   title: strings.noBillsTitle,
                   message: strings.noBillsMessage,
-                  action: SplitSecondaryButton(
-                    label: strings.equalSplit,
-                    icon: Icons.balance_rounded,
-                    onPressed: () => _startBill(context, SplitMode.equal),
-                  ),
                 )
               else
                 Column(
@@ -158,14 +123,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _startBill(BuildContext context, SplitMode mode) {
-    controller.startBill(mode);
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => NewBillPage(controller: controller),
-      ),
-    );
-  }
 }
 
 class _MetricTile extends StatelessWidget {

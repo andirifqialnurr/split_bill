@@ -12,8 +12,9 @@ void main() {
     await tester.pumpWidget(const SplitBillApp(loadPersistenceOnStart: false));
 
     expect(find.text('Split Bill'), findsOneWidget);
-    expect(find.text('Bill Baru'), findsWidgets);
-    expect(find.text('Split Rata'), findsWidgets);
+    expect(find.text('Bill Baru'), findsNothing);
+    expect(find.text('Split Rata'), findsNothing);
+    expect(find.byTooltip('Bill Baru'), findsOneWidget);
     expect(find.text('Bagi tagihan offline.'), findsOneWidget);
   });
 
@@ -30,8 +31,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Dark'), findsNothing);
-    expect(find.text('New Bill'), findsWidgets);
-    expect(find.text('Equal Split'), findsWidgets);
+    expect(find.text('New Bill'), findsNothing);
+    expect(find.text('Equal Split'), findsNothing);
+    expect(find.byTooltip('New Bill'), findsOneWidget);
     expect(find.text('Split bills offline.'), findsOneWidget);
   });
 
@@ -80,16 +82,13 @@ Future<void> _completeEqualSplitFlow(
   required String expectedResultLabel,
   required String expectedPerPersonLabel,
 }) async {
-  final equalAction = find
-      .ancestor(
-        of: find.text(equalLabel),
-        matching: find.bySubtype<ButtonStyleButton>(),
-      )
-      .first;
-  await tester.ensureVisible(equalAction);
-  await tester.tap(equalAction);
+  final newBillAction = find.byType(FloatingActionButton);
+  await tester.ensureVisible(newBillAction);
+  await tester.tap(newBillAction);
   await tester.pumpAndSettle();
 
+  await tester.tap(find.text(equalLabel));
+  await tester.pumpAndSettle();
   await _tapPrimaryButton(tester, nextLabel);
 
   await tester.enterText(find.widgetWithText(TextField, nameFieldLabel), 'Ayu');

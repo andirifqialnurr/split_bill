@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../domain/split_bill_models.dart';
+import '../features/bill/new_bill_page.dart';
 import '../features/home/home_page.dart';
 import '../features/settings/settings_page.dart';
 import '../ui/split_components.dart';
@@ -74,11 +76,28 @@ class SplitShell extends StatelessWidget {
           child: page,
         ),
       ),
+      floatingActionButton: state.activeTab == SplitTab.home
+          ? FloatingActionButton(
+              tooltip: controller.strings.newBill,
+              onPressed: () => _startBill(context),
+              child: const Icon(Icons.add_rounded),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       bottomNavigationBar: SplitFloatingNav(
         activeTab: state.activeTab,
         onChanged: controller.setTab,
         billsLabel: controller.strings.bills,
         settingsLabel: controller.strings.settings,
+      ),
+    );
+  }
+
+  void _startBill(BuildContext context) {
+    controller.startBill(SplitMode.items);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => NewBillPage(controller: controller),
       ),
     );
   }
